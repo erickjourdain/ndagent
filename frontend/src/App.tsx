@@ -21,10 +21,15 @@ import HubIcon from '@mui/icons-material/Hub';
 import FileUploader from './components/FileUploader';
 import ReferenceViewer from './components/ReferenceViewer';
 import AnalysisDashboard from './components/AnalysisDashboard';
+import AdminDashboard from './components/AdminDashboard';
 import { api } from './api/client';
 import type { ReferenceData, AnalysisResponse } from './api/client';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 function App() {
+  const [view, setView] = useState<'dashboard' | 'admin'>('dashboard');
+  const [adminPassword, setAdminPassword] = useState<string | null>(null);
+
   const [referenceData, setReferenceData] = useState<ReferenceData | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResponse | null>(null);
 
@@ -115,6 +120,17 @@ function App() {
               Se reconnecter
             </Button>
           )}
+          {backendConnected && view === 'dashboard' && (
+            <Button
+              variant="outlined"
+              color="secondary"
+              size="small"
+              startIcon={<SettingsIcon />}
+              onClick={() => setView('admin')}
+            >
+              Gérer le clausier
+            </Button>
+          )}
           <Chip
             icon={<HubIcon />}
             label={
@@ -137,7 +153,7 @@ function App() {
         </Stack>
       </Box>
 
-      {/* Main Grid Body */}
+      {/* Main Grid Body / Content Area */}
       {loadingConfig ? (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexGrow: 1, py: 8 }}>
           <CircularProgress color="primary" size={50} sx={{ mb: 2 }} />
@@ -145,6 +161,15 @@ function App() {
             Initialisation des paramètres de conformité...
           </Typography>
         </Box>
+      ) : view === 'admin' ? (
+        <AdminDashboard
+          onBack={() => {
+            setView('dashboard');
+            fetchReferenceData();
+          }}
+          adminPassword={adminPassword}
+          setAdminPassword={setAdminPassword}
+        />
       ) : (
         <Grid container spacing={4} sx={{ flexGrow: 1 }}>
 

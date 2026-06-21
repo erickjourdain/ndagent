@@ -3,6 +3,7 @@ import cors from 'cors';
 import multer from 'multer';
 import dotenv from 'dotenv';
 import { AnalysisController } from './controllers/analysis.controller.js';
+import { ClausierController } from './controllers/clausier.controller.js';
 
 dotenv.config();
 
@@ -12,8 +13,8 @@ const port = process.env.PORT || 5000;
 // Enable CORS for frontend client port (e.g. 3000, 5173, etc)
 app.use(cors({
   origin: '*',
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-password']
 }));
 
 app.use(express.json());
@@ -29,6 +30,14 @@ const upload = multer({
 // App Routes
 app.post('/api/analyze', upload.single('file'), AnalysisController.analyze);
 app.get('/api/reference', AnalysisController.getReferenceData);
+
+// Admin Routes
+app.post('/api/admin/verify', ClausierController.verify);
+app.get('/api/admin/clauses', ClausierController.verifyAdmin, ClausierController.getClauses);
+app.post('/api/admin/clauses', ClausierController.verifyAdmin, ClausierController.createClause);
+app.put('/api/admin/clauses/:id', ClausierController.verifyAdmin, ClausierController.updateClause);
+app.patch('/api/admin/clauses/:id/deactivate', ClausierController.verifyAdmin, ClausierController.deactivateClause);
+app.patch('/api/admin/clauses/:id/reactivate', ClausierController.verifyAdmin, ClausierController.reactivateClause);
 
 // Basic Health Check Endpoint
 app.get('/api/health', (req, res) => {

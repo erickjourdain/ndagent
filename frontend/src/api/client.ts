@@ -14,6 +14,7 @@ export interface ClauseConfig {
   name: string;
   description: string;
   criticality: 'High' | 'Medium' | 'Low';
+  active?: boolean;
 }
 
 export interface ReferenceData {
@@ -67,4 +68,94 @@ export const api = {
     const response = await apiClient.get<ReferenceData>('/reference');
     return response.data;
   },
+
+  /**
+   * Verify administrative password.
+   */
+  verifyAdminPassword: async (password: string): Promise<boolean> => {
+    try {
+      await apiClient.post('/admin/verify', { password });
+      return true;
+    } catch {
+      return false;
+    }
+  },
+
+  /**
+   * Fetch all clauses (active and inactive) for admin management.
+   */
+  getAdminClauses: async (password: string): Promise<ClauseConfig[]> => {
+    const response = await apiClient.get<ClauseConfig[]>('/admin/clauses', {
+      headers: {
+        'x-admin-password': password
+      }
+    });
+    return response.data;
+  },
+
+  /**
+   * Create a new clause.
+   */
+  createClause: async (password: string, clause: Omit<ClauseConfig, 'active'>): Promise<ClauseConfig> => {
+    const response = await apiClient.post<ClauseConfig>('/admin/clauses', clause, {
+      headers: {
+        'x-admin-password': password
+      }
+    });
+    return response.data;
+  },
+
+  /**
+   * Update (modify) an existing clause. Under the hood, this will deactivate the old one
+   * and create a new versioned copy.
+   */
+  updateClause: async (
+    password: string,
+    id: string,
+    clause: Omit<ClauseConfig, 'id' | 'active'>
+  ): Promise<{ message: string; oldClause: ClauseConfig; newClause: ClauseConfig }> => {
+    const response = await apiClient.put<{ message: string; oldClause: ClauseConfig; newClause: ClauseConfig }>(
+      `/admin/clauses/${id}`,
+      clause,
+      {
+        headers: {
+          'x-admin-password': password
+        }
+      }
+    );
+    return response.data;
+  },
+
+  /**
+   * Deactivate a clause.
+   */
+  deactivateClause: async (password: string, id: string): Promise<ClauseConfig> => {
+    const response = await apiClient.patch<ClauseConfig>(
+      `/admin/clauses/${id}/deactivate`,
+      {},
+      {
+        headers: {
+          'x-admin-password': password
+        }
+      }
+    );
+    return response.data;
+  },
+
+  /**
+   * Reactivate a clause.
+   */
+  reactivateClause: async (password: string, id: string): Promise<ClauseConfig> => {
+    const response = await apiClient.patch<ClauseConfig>(
+      `/admin/clauses/${id}/reactivate`,
+      {},
+      {
+        headers: {
+          'x-admin-password': password
+        }
+      }
+    );
+    return response.data;
+  },
 };
+

@@ -61,6 +61,10 @@ export class AnalysisController {
         }
       }
 
+      // Filter out inactive clauses to ensure the LLM only receives active ones
+      const activeClausesForAnalysis = (clausierJson.clauses || []).filter((c: any) => c.active !== false);
+      clausierJson = { clauses: activeClausesForAnalysis };
+
       // 2. Parse client document
       console.log(`Parsing file ${file.originalname} (${file.mimetype})...`);
       const clientNdaText = await FileParserService.parseFile(file.buffer, file.mimetype);
@@ -112,9 +116,12 @@ export class AnalysisController {
         clausier = JSON.parse(clausierRaw);
       }
 
+      // Filter to only return active clauses to regular users
+      const activeClausesForViewer = (clausier.clauses || []).filter((c: any) => c.active !== false);
+
       res.status(200).json({
         referenceNda,
-        clausier: clausier.clauses || []
+        clausier: activeClausesForViewer
       });
     } catch (error: any) {
       console.error('Failed to load reference data:', error);
