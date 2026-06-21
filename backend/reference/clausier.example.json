@@ -1,0 +1,40 @@
+{
+  "clauses": [
+    {
+      "id": "Bilateralite",
+      "name": "Caractère bilatéral de l'accord",
+      "description": "Le NDA proposé par le partenaire doit impérativement être bilatéral et réciproque. Il est inacceptable que l'accord soit unilatéral ou disproportionné par rapport aux intérêts de notre entreprise.",
+      "criticality": "Medium"
+    },
+    {
+      "id": "DureeConfidentialite",
+      "name": "Durée de la confidentialité",
+      "description": "La durée de confidentialité doit être limitée (par exemple, 5 ans après la fin du projet ou des échanges). Les clauses prévoyant une durée de confidentialité illimitée ou excessive (supérieure à 10 ans) doivent être évitées ou négociées.",
+      "criticality": "High"
+    },
+    {
+      "id": "DivulgationLegale",
+      "name": "Exceptions de divulgation légale",
+      "description": "L'accord doit autoriser la divulgation d'informations si cela est exigé par la loi, une décision judiciaire ou une autorité administrative, sous réserve d'en informer l'autre partie dans les meilleurs délais.",
+      "criticality": "Medium"
+    },
+    {
+      "id": "DestructionSauvegarde",
+      "name": "Restitution ou destruction des informations",
+      "description": "À la fin de l'accord, les documents confidentiels doivent être restitués ou détruits dans un délai raisonnable (ex: 30 jours). Il est nécessaire de prévoir une exception explicite nous permettant de conserver une copie de sauvegarde pour des raisons de conformité légale ou d'archivage informatique.",
+      "criticality": "High"
+    },
+    {
+      "id": "ProprieteIntellectuelle",
+      "name": "Absence de transfert de propriété intellectuelle",
+      "description": "La transmission d'informations confidentielles n'accorde aucun droit de propriété intellectuelle, brevet ou licence à la partie réceptrice sur ces informations.",
+      "criticality": "High"
+    },
+    {
+      "id": "JuridictionDroit",
+      "name": "Droit applicable et juridiction compétente",
+      "description": "Le contrat doit de préférence être régi par le droit français et soumis à la compétence des tribunaux français (ex: Paris). L'acceptation d'un droit étranger ou d'une juridiction étrangère doit être soumise à validation juridique.",
+      "criticality": "Medium"
+    }
+  ]
+}
