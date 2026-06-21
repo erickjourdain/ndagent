@@ -110,7 +110,32 @@ export class OllamaService {
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userPrompt }
           ],
-          format: 'json',
+          format: {
+            type: 'object',
+            properties: {
+              summary: { type: 'string' },
+              riskLevel: { type: 'string', enum: ['Low', 'Medium', 'High'] },
+              overallAssessment: { type: 'string' },
+              clauses: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'string' },
+                    name: { type: 'string' },
+                    status: { type: 'string', enum: ['Compliant', 'Partially Compliant', 'Non-Compliant', 'Missing'] },
+                    currentText: { type: 'string' },
+                    referenceText: { type: 'string' },
+                    deviation: { type: 'string' },
+                    recommendation: { type: 'string' },
+                    proposal: { type: 'string' }
+                  },
+                  required: ['id', 'name', 'status', 'currentText', 'referenceText', 'deviation', 'recommendation', 'proposal']
+                }
+              }
+            },
+            required: ['summary', 'riskLevel', 'overallAssessment', 'clauses']
+          },
           stream: false,
           options: {
             temperature: 0.1, // Keep it deterministic and factual
@@ -137,29 +162,7 @@ export class OllamaService {
         return parsedJson;
       } catch (jsonErr: any) {
         console.error('Failed to parse or validate JSON response from Ollama:', rawText, jsonErr);
-
-        const detailMessage = jsonErr instanceof z.ZodError
-          ? jsonErr.issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
-          : jsonErr.message;
-
-        const expectedFormat = `{
-  "summary": "résumé en français",
-  "riskLevel": "Low" | "Medium" | "High",
-  "overallAssessment": "évaluation générale",
-  "clauses": [
-    {
-      "id": "identifiant court (ex: Article 1.1)",
-      "name": "nom de la clause",
-      "status": "Compliant" | "Partially Compliant" | "Non-Compliant" | "Missing",
-      "currentText": "texte client",
-      "referenceText": "règle de référence",
-      "deviation": "analyse de l'écart",
-      "recommendation": "conseil de négociation",
-      "proposal": "reformulation proposée"
-    }
-  ]
-}`;
-        throw new Error(`La sortie d'Ollama n'est pas conforme au format attendu.\nDétails : ${detailMessage}\nFormat attendu :\n${expectedFormat}`);
+        throw new Error('La sortie d\'Ollama n\'est pas conforme au format attendu.');
       }
     } catch (error: any) {
       console.error('Ollama communication error:', error);

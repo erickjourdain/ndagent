@@ -24,6 +24,6 @@ COPY --from=builder /usr/src/app/dist ./dist
 # Copy reference documents needed at runtime
 COPY reference ./reference
 
-EXPOSE 5000
+EXPOSE 3000
 
 CMD ["node", "dist/index.js"]

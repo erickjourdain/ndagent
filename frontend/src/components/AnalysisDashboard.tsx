@@ -259,19 +259,21 @@ export const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ analysis }
                 </Grid>
 
                 {/* 3. Proposed Clause (New Section) */}
-                <Grid size={{ xs: 12, md: 12 }}>
-                  <Box sx={{ mt: 3, p: 2, backgroundColor: 'rgba(59, 130, 246, 0.1)', borderRadius: 2, borderLeft: '4px solid #3b82f6' }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                      <ArticleOutlinedIcon sx={{ color: 'primary.main', mr: 1 }} />
-                      <Typography variant="caption" color="primary" sx={{ fontWeight: 700 }}>
-                        PROPOSITION DE FORMULATION (Selon NDA de Référence / Clausier)
+                {clause.status !== 'Compliant' && (
+                  <Grid size={{ xs: 12, md: 12 }}>
+                    <Box sx={{ mt: 3, p: 2, backgroundColor: 'rgba(59, 130, 246, 0.1)', borderRadius: 2, borderLeft: '4px solid #3b82f6' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        <ArticleOutlinedIcon sx={{ color: 'primary.main', mr: 1 }} />
+                        <Typography variant="caption" color="primary" sx={{ fontWeight: 700 }}>
+                          PROPOSITION DE FORMULATION (Selon NDA de Référence / Clausier)
+                        </Typography>
+                      </Box>
+                      <Typography variant="body2" sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: 'text.primary' }}>
+                        {clause.proposal || ''}
                       </Typography>
                     </Box>
-                    <Typography variant="body2" sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: 'text.primary' }}>
-                      {clause.proposal || '[Aucune proposition générée. Vérifiez la configuration du modèle.]'}
-                    </Typography>
-                  </Box>
-                </Grid>
+                  </Grid>
+                )}
 
               </AccordionDetails>
             </Accordion>

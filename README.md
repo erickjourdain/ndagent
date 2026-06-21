@@ -39,14 +39,14 @@ Run the frontend and backend in separate terminals for hot reloading:
    ```bash
    npm run dev
    ```
-   *The backend starts at: `http://localhost:5000`*
+   *The backend starts at: `http://localhost:3000`*
 
 ### 2. Start the Frontend
 1. Go to the `frontend` folder:
    ```bash
    cd frontend
    ```
-2. Set your configuration in `.env` (`VITE_API_URL=http://localhost:5000/api`).
+2. Set your configuration in `.env` (`VITE_API_URL=http://localhost:3000/api`).
 3. Run in development mode:
    ```bash
    npm run dev
@@ -64,8 +64,8 @@ You can run the entire application containerized using Docker Compose:
    docker-compose up --build
    ```
 2. Open your browser at:
-   - **Frontend**: `http://localhost:3000`
-   - **Backend Health Check**: `http://localhost:5000/api/health`
+   - **Frontend**: `http://localhost:3030`
+   - **Backend Health Check**: `http://localhost:3000/api/health`
 
 *Note: In Docker, the backend communicates with the host machine's Ollama instance via the hostname `host.docker.internal`.*
 
@@ -74,4 +74,4 @@ You can run the entire application containerized using Docker Compose:
 ## Reference Configurations
 The reference documents are located in:
 - `backend/reference/reference-nda.txt`: The golden standard agreement template.
-- `backend/reference/clausier.json`: The rules checklist defining conditions (High/Medium/Low criticality description). Edit this file to add or modify rules.
+- `backend/reference/clausier.json`: The rules checklist defining conditions (High/Medium/Low criticality description).
