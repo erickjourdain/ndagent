@@ -32,6 +32,7 @@ function App() {
 
   const [referenceData, setReferenceData] = useState<ReferenceData | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResponse | null>(null);
+  const [analyzedFileName, setAnalyzedFileName] = useState<string>('');
 
   const [loadingConfig, setLoadingConfig] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -65,6 +66,7 @@ function App() {
     setIsAnalyzing(true);
     setUploadProgress(0);
     setAnalysisResult(null);
+    setAnalyzedFileName(file.name);
 
     try {
       const result = await api.analyzeNDA(file, (progressEvent) => {
@@ -204,7 +206,7 @@ function App() {
           {/* Right Column: AI Analysis Outcomes */}
           <Grid size={{ xs: 12, lg: 8 }}>
             {analysisResult ? (
-              <AnalysisDashboard analysis={analysisResult} />
+              <AnalysisDashboard analysis={analysisResult} fileName={analyzedFileName} />
             ) : (
               <Card
                 sx={{

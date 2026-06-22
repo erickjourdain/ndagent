@@ -11,6 +11,7 @@ import {
   Chip,
   Paper,
   Divider,
+  Button,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -18,14 +19,17 @@ import WarningIcon from '@mui/icons-material/Warning';
 import CancelIcon from '@mui/icons-material/Cancel';
 import InfoIcon from '@mui/icons-material/Info';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import RiskBadge from './RiskBadge';
 import type { AnalysisResponse, ClauseAnalysisResult } from '../api/client';
+import { generateAuditPDF } from '../utils/pdfGenerator';
 
 interface AnalysisDashboardProps {
   analysis: AnalysisResponse;
+  fileName?: string;
 }
 
-export const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ analysis }) => {
+export const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ analysis, fileName }) => {
   const translateStatus = (status: ClauseAnalysisResult['status']) => {
     switch (status) {
       case 'Compliant': return 'Conforme';
@@ -88,9 +92,37 @@ export const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ analysis }
         <CardContent sx={{ p: 4 }}>
           <Grid container spacing={4} sx={{ alignItems: 'center' }}>
             <Grid size={{ xs: 12, md: 8 }}>
-              <Typography variant="h4" gutterBottom sx={{ fontWeight: 800 }}>
-                Résumé du Rapport d'Audit
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 2 }}>
+                <Typography variant="h4" sx={{ fontWeight: 800 }}>
+                  Résumé du Rapport d'Audit
+                </Typography>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<PictureAsPdfIcon />}
+                  onClick={() => generateAuditPDF(analysis, fileName)}
+                  sx={{
+                    background: 'linear-gradient(90deg, #6366F1 0%, #06B6D4 100%)',
+                    fontWeight: 700,
+                    textTransform: 'none',
+                    borderRadius: 2,
+                    px: 2.5,
+                    py: 1,
+                    boxShadow: '0 4px 12px rgba(99, 102, 241, 0.2)',
+                    '&:hover': {
+                      background: 'linear-gradient(90deg, #4F46E5 0%, #0891B2 100%)',
+                      boxShadow: '0 6px 16px rgba(99, 102, 241, 0.3)',
+                    }
+                  }}
+                >
+                  Télécharger le PDF
+                </Button>
+              </Box>
+              {fileName && (
+                <Typography variant="subtitle2" color="text.secondary" sx={{ fontStyle: 'italic', mb: 2 }}>
+                  Document analysé : {fileName}
+                </Typography>
+              )}
               <Typography variant="body1" color="text.secondary" component="p" sx={{ mb: 2 }}>
                 {analysis.summary}
               </Typography>
@@ -268,7 +300,7 @@ export const AnalysisDashboard: React.FC<AnalysisDashboardProps> = ({ analysis }
                           PROPOSITION DE FORMULATION (Selon NDA de Référence / Clausier)
                         </Typography>
                       </Box>
-                      <Typography variant="body2" sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: 'text.primary' }}>
+                      <Typography variant="body2" sx={{ fontFamily: 'monospace', whiteSpace: 'pre-wrap', color: 'text.primary', wordBreak: 'break-word' }}>
                         {clause.proposal || ''}
                       </Typography>
                     </Box>
