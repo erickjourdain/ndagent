@@ -1,7 +1,19 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
+import fs from 'fs/promises';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const getPromptDir = () => {
+  // src/services/ollama.service.ts compiles to dist/services/ollama.service.js
+  // prompt directory is at project root (../../prompt)
+  return path.join(__dirname, '..', '..', 'prompt');
+};
 
 const OLLAMA_API_URL = process.env.OLLAMA_API_URL || 'http://localhost:11434';
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'mistral';
@@ -37,58 +49,27 @@ export class OllamaService {
     referenceNdaText: string,
     clausierJson: any
   ): Promise<NDAAnalysisResponse> {
-    const systemPrompt = `
-      Tu es un conseiller juridique spécialisé en droit des contrats et propriété intellectuelle.
+    const promptDir = getPromptDir();
+    const promptPath = path.join(promptDir, 'system_prompt.txt');
+    const promptExamplePath = path.join(promptDir, 'system_prompt.example.txt');
 
-      Ton travail consiste à analyser un Accord de Non-Divulgation (NDA) d'un client de l'entreprise fourni par un utilisateur (NDA Client) par rapport à un modèle de référence (NDA de Référence) et un ensemble de règles de conformité (Clausier).
-      Ton rôle consiste à protéger les intérêts de l'entreprise en évaluant le NDA Client et en identifiant les faiblesses qui pourraient nuire à l'entreprise.
-
-      Tu dois évaluer la conformité du NDA Client en comparant chaque clause de celui-ci:
-      1. Aux obligations légales minimales ou usuelles (définies implicitement par ton expertise).
-      2. Aux exigences spécifiques ou formulations préférées contenues dans le Clausier.
-      3. À la structure et au contenu du NDA de Référence.
-
-      Toutes les explications rédigées (champs 'summary', 'overallAssessment', 'deviation', 'recommendation' et 'proposal') DOIVENT être rédigées en français.
-
-      Tu dois impérativement retourner un objet JSON valide correspondant au schéma suivant :
-      {
-        "summary": "Court paragraphe en français résumant le risque global du NDA par rapport au NDA de Référence et au Clausier",
-        "riskLevel": "Low" | "Medium" | "High",
-        "overallAssessment": "Explication claire en français expliquant pourquoi ce niveau de risque a été choisi et les points critiques que l'utilisateur doit réviser. Pour chaque point critique tu founiras une entrée dans le tableau des clauses ci-dessous.",
-        "clauses": [
-          {
-            "id": "La référence de la clause dans le NDA du client en se limitant à 10 caractères (ex: Article 1.1, Clause 2, Section 3.3). Ne pas intégrer le titre de l'article dans l'id",
-            "name": "Nom de la clause",
-            "status": "Compliant" | "Partially Compliant" | "Non-Compliant" | "Missing",
-            "currentText": "Le texte exact de la clause trouvé dans le NDA Client (ou chaîne vide si manquant)",
-            "referenceText": "La règle ou la formulation recommandée issue du clausier/NDA de référence",
-            "deviation": "Analyse juridique détaillée en français comparant la formulation du client aux contraintes du clausier",
-            "recommendation": "Conseil exploitable en français sur la manière de négocier ou de corriger cette clause",
-            "proposal": "Proposition de formulation de la clause adaptée aux contraintes du clausier/NDA de référence",
-          }
-        ]
+    let systemPromptTemplate = '';
+    try {
+      systemPromptTemplate = await fs.readFile(promptPath, 'utf8');
+    } catch (err) {
+      try {
+        systemPromptTemplate = await fs.readFile(promptExamplePath, 'utf8');
+        console.log('Using system_prompt.example.txt fallback');
+      } catch (exErr) {
+        console.warn('Could not read system_prompt.txt or system_prompt.example.txt, using empty default:', exErr);
       }
+    }
 
-      Assure-toi que la sortie est STRICTEMENT un JSON valide. 
-      N'inclus pas de bloc markdown comme \`\`\`json. 
-      Renvoie UNIQUEMENT la chaîne de caractères JSON.
-
-
-      Voici les documents de référence :
-      
-      [TEXTE DU NDA DE RÉFÉRENCE]
-      **********************************
-      ${referenceNdaText}
-      **********************************
-
-      [CLAUSIER / RÈGLES DE CONFORMITÉ]
-      **********************************
-      ${JSON.stringify(clausierJson, null, 2)}
-      **********************************
-    `;
+    const systemPrompt = systemPromptTemplate
+      .replace('{{referenceNdaText}}', referenceNdaText)
+      .replace('{{clausierJson}}', JSON.stringify(clausierJson, null, 2));
 
     const userPrompt = `
-
       Ci-dessous se trouve le texte du NDA Client à analyser :
 
       [NDA CLIENT A ANALYSER]
