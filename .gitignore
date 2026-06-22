@@ -30,9 +30,13 @@ pnpm-debug.log*
 
 # Project-specific private/internal reference files
 # These files contain sensitive internal rules and must not be published to GitHub
-backend/reference/clausier.json
-backend/reference/reference-nda.txt
+backend/reference/clausier_fr.json
+backend/reference/clausier_en.json
+backend/reference/reference-nda_fr.txt
+backend/reference/reference-nda_en.txt
 
 # Do NOT ignore the generic example templates
-!backend/reference/clausier.example.json
-!backend/reference/reference-nda.example.txt
+!backend/reference/clausier_fr.example.json
+!backend/reference/clausier_en.example.json
+!backend/reference/reference-nda_fr.example.txt
+!backend/reference/reference-nda_en.example.txt

@@ -47,11 +47,14 @@ export class OllamaService {
   static async analyzeNDA(
     clientNdaText: string,
     referenceNdaText: string,
-    clausierJson: any
+    clausierJson: any,
+    language: 'fr' | 'en' = 'fr'
   ): Promise<NDAAnalysisResponse> {
     const promptDir = getPromptDir();
-    const promptPath = path.join(promptDir, 'system_prompt.txt');
-    const promptExamplePath = path.join(promptDir, 'system_prompt.example.txt');
+    const promptFileName = language === 'en' ? 'system_prompt_en.txt' : 'system_prompt_fr.txt';
+    const promptExampleFileName = language === 'en' ? 'system_prompt_en.txt' : 'system_prompt_fr.example.txt';
+    const promptPath = path.join(promptDir, promptFileName);
+    const promptExamplePath = path.join(promptDir, promptExampleFileName);
 
     let systemPromptTemplate = '';
     try {
@@ -59,9 +62,9 @@ export class OllamaService {
     } catch (err) {
       try {
         systemPromptTemplate = await fs.readFile(promptExamplePath, 'utf8');
-        console.log('Using system_prompt.example.txt fallback');
+        console.log(`Using ${promptExampleFileName} fallback`);
       } catch (exErr) {
-        console.warn('Could not read system_prompt.txt or system_prompt.example.txt, using empty default:', exErr);
+        console.warn(`Could not read ${promptFileName} or ${promptExampleFileName}, using empty default:`, exErr);
       }
     }
 
@@ -69,7 +72,16 @@ export class OllamaService {
       .replace('{{referenceNdaText}}', referenceNdaText)
       .replace('{{clausierJson}}', JSON.stringify(clausierJson, null, 2));
 
-    const userPrompt = `
+    const userPrompt = language === 'en'
+      ? `
+      Below is the Client NDA text to analyze:
+
+      [CLIENT NDA TO ANALYZE]
+      **********************************
+      ${clientNdaText}
+      **********************************
+    `
+      : `
       Ci-dessous se trouve le texte du NDA Client à analyser :
 
       [NDA CLIENT A ANALYSER]

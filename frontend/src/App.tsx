@@ -12,6 +12,8 @@ import {
   Stack,
   Chip,
   Button,
+  ToggleButton,
+  ToggleButtonGroup,
 } from '@mui/material';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import SecurityIcon from '@mui/icons-material/Security';
@@ -30,9 +32,11 @@ function App() {
   const [view, setView] = useState<'dashboard' | 'admin'>('dashboard');
   const [adminPassword, setAdminPassword] = useState<string | null>(null);
 
+  const [selectedLanguage, setSelectedLanguage] = useState<'fr' | 'en'>('fr');
   const [referenceData, setReferenceData] = useState<ReferenceData | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResponse | null>(null);
   const [analyzedFileName, setAnalyzedFileName] = useState<string>('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const [loadingConfig, setLoadingConfig] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -42,15 +46,15 @@ function App() {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [backendConnected, setBackendConnected] = useState<boolean | null>(null);
 
-  // Load Reference NDA & Clausier from backend on mount
+  // Load Reference NDA & Clausier from backend when selectedLanguage changes
   useEffect(() => {
-    fetchReferenceData();
-  }, []);
+    fetchReferenceData(selectedLanguage);
+  }, [selectedLanguage]);
 
-  const fetchReferenceData = async () => {
+  const fetchReferenceData = async (lang: 'fr' | 'en') => {
     setLoadingConfig(true);
     try {
-      const data = await api.getReferenceData();
+      const data = await api.getReferenceData(lang);
       setReferenceData(data);
       setBackendConnected(true);
     } catch (err: any) {
@@ -63,13 +67,34 @@ function App() {
   };
 
   const handleFileSelect = async (file: File) => {
+    setSelectedFile(file);
+    setAnalysisResult(null);
+    setAnalyzedFileName('');
+
+    try {
+      const detectedLang = await api.detectLanguage(file);
+      setSelectedLanguage(detectedLang);
+      setSuccessMsg(`Langue détectée automatiquement : ${detectedLang === 'fr' ? 'Français' : 'Anglais'}`);
+    } catch (err: any) {
+      console.warn('Could not auto-detect file language:', err);
+    }
+  };
+
+  const handleFileClear = () => {
+    setSelectedFile(null);
+    setAnalysisResult(null);
+    setAnalyzedFileName('');
+  };
+
+  const handleStartAnalysis = async () => {
+    if (!selectedFile) return;
     setIsAnalyzing(true);
     setUploadProgress(0);
     setAnalysisResult(null);
-    setAnalyzedFileName(file.name);
+    setAnalyzedFileName(selectedFile.name);
 
     try {
-      const result = await api.analyzeNDA(file, (progressEvent) => {
+      const result = await api.analyzeNDA(selectedFile, selectedLanguage, (progressEvent) => {
         const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
         setUploadProgress(percentCompleted);
       });
@@ -82,11 +107,6 @@ function App() {
     } finally {
       setIsAnalyzing(false);
     }
-  };
-
-  const handleFileClear = () => {
-    setAnalysisResult(null);
-    setAnalyzedFileName('');
   };
 
   return (
@@ -121,7 +141,7 @@ function App() {
               variant="outlined"
               color="error"
               size="small"
-              onClick={fetchReferenceData}
+              onClick={() => fetchReferenceData(selectedLanguage)}
               sx={{ borderStyle: 'dashed' }}
             >
               Se reconnecter
@@ -172,7 +192,7 @@ function App() {
         <AdminDashboard
           onBack={() => {
             setView('dashboard');
-            fetchReferenceData();
+            fetchReferenceData(selectedLanguage);
           }}
           adminPassword={adminPassword}
           setAdminPassword={setAdminPassword}
@@ -187,15 +207,78 @@ function App() {
               {/* File Upload Section */}
               <Card>
                 <CardContent sx={{ p: 3 }}>
+                  <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Langue du NDA à analyser
+                  </Typography>
+                  <ToggleButtonGroup
+                    value={selectedLanguage}
+                    exclusive
+                    onChange={(_, newLang) => {
+                      if (newLang !== null) {
+                        setSelectedLanguage(newLang);
+                      }
+                    }}
+                    fullWidth
+                    sx={{
+                      mb: 3,
+                      '& .MuiToggleButton-root': {
+                        py: 1,
+                        fontSize: '0.85rem',
+                        fontWeight: 700,
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        color: 'text.secondary',
+                        '&.Mui-selected': {
+                          color: '#06B6D4',
+                          backgroundColor: 'rgba(6, 182, 212, 0.12)',
+                          borderColor: 'rgba(6, 182, 212, 0.4)',
+                          '&:hover': {
+                            backgroundColor: 'rgba(6, 182, 212, 0.2)',
+                          }
+                        }
+                      }
+                    }}
+                    size="small"
+                  >
+                    <ToggleButton value="fr">
+                      🇫🇷 Français
+                    </ToggleButton>
+                    <ToggleButton value="en">
+                      🇬🇧 Anglais
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+
                   <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
                     Chargement du Document Client
                   </Typography>
                   <FileUploader
+                    selectedFile={selectedFile}
                     onFileSelect={handleFileSelect}
                     onFileClear={handleFileClear}
                     isAnalyzing={isAnalyzing}
                     uploadProgress={uploadProgress}
                   />
+
+                  {selectedFile && !isAnalyzing && (
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      startIcon={<AutoAwesomeIcon />}
+                      onClick={handleStartAnalysis}
+                      sx={{
+                        mt: 3,
+                        py: 1.5,
+                        fontWeight: 700,
+                        backgroundImage: 'linear-gradient(90deg, #0891B2 0%, #06B6D4 100%)',
+                        color: '#0B0F19',
+                        '&:hover': {
+                          backgroundImage: 'linear-gradient(90deg, #06B6D4 0%, #0891B2 100%)',
+                          boxShadow: '0 0 15px rgba(6, 182, 212, 0.6)',
+                        }
+                      }}
+                    >
+                      Lancer l'analyse ({selectedLanguage === 'fr' ? 'Français' : 'Anglais'})
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
 

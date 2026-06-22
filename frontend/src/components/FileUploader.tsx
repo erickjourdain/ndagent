@@ -5,6 +5,7 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import CloseIcon from '@mui/icons-material/Close';
 
 interface FileUploaderProps {
+  selectedFile: File | null;
   onFileSelect: (file: File) => void;
   onFileClear?: () => void;
   isAnalyzing: boolean;
@@ -12,13 +13,13 @@ interface FileUploaderProps {
 }
 
 export const FileUploader: React.FC<FileUploaderProps> = ({
+  selectedFile,
   onFileSelect,
   onFileClear,
   isAnalyzing,
   uploadProgress,
 }) => {
   const [dragActive, setDragActive] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleDrag = (e: React.DragEvent) => {
@@ -40,7 +41,6 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
     const extension = file.name.split('.').pop()?.toLowerCase();
     
     if (validTypes.includes(file.type) || ['pdf', 'docx', 'doc'].includes(extension || '')) {
-      setSelectedFile(file);
       onFileSelect(file);
     } else {
       alert('Type de fichier non supporté. Veuillez charger un fichier PDF ou DOCX.');
@@ -69,7 +69,6 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   };
 
   const clearFile = () => {
-    setSelectedFile(null);
     if (inputRef.current) {
       inputRef.current.value = '';
     }

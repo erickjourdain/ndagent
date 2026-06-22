@@ -1,0 +1,122 @@
+MUTUAL NON-DISCLOSURE AGREEMENT
+
+
+
+BY AND BETWEEN:
+
+--------------------------------, a company registered in -------------------- with a share capital of ------------ Euros, having its registered office at -------------------------------------, registered with the trade register of --------------------- under No. --------------------------- represented by ------------------------ in their capacity as -------------------------------, duly authorized for the purpose hereof, hereinafter referred to as "---------------",
+
+Of the first part;
+
+AND:
+
+[COMPANY_NAME], a [company_type], having its registered office at [registered_office_address], registered under number [registration_number], represented by [representative_name], as [representative_title], hereinafter referred to as the "Company",
+
+Of the second part;
+
+Each hereinafter referred to individually as a "Party" and collectively as the "Parties".
+
+
+
+WHEREAS:
+
+• ------------------------------- operates in the field of ------------------------------
+
+• The Company operates in the fields of [company_activities].
+
+• ----------------------------- and the Company wish to exchange certain information in connection with their collaboration regarding ------------------------------------------------ (hereinafter the "Project").
+
+
+
+NOW, THEREFORE, THE PARTIES AGREE AS FOLLOWS:
+
+
+
+ARTICLE 1 – PURPOSE OF THE AGREEMENT
+The purpose of this non-disclosure agreement (hereinafter the "Agreement") is to define the conditions for the exchange, use, and protection of confidential information disclosed by one Party (hereinafter the "Disclosing Party") to the other Party (hereinafter the "Receiving Party") for the purposes of the Project.
+
+
+
+ARTICLE 2 – CONFIDENTIALITY OF INFORMATION
+The Parties agree that all information of any nature (technical, scientific, industrial, commercial, financial, or otherwise) and in particular, but without limitation, samples, materials, drawings, models, patents, plans, formulas, processes, specifications, methods, analytical techniques, procedures, technical manuals, correspondence, studies, reports, algorithms, software (source code, object code, associated documentation), disclosed during the performance of the Agreement by one Party to the other Party, regardless of the medium (written, oral, or by any other means including computer) and identified as confidential by the mark "Confidential" or any equivalent written mark establishing unequivocally its confidential nature, is confidential (hereinafter "Confidential Information").
+
+However, for any disclosure that does not allow for such mark to be applied, the Disclosing Party shall confirm the confidential nature of such Confidential Information in writing to the Receiving Party within fifteen (15) days of such communication, it being understood that the Receiving Party shall treat the information received during this fifteen-day period as Confidential Information.
+
+
+
+ARTICLE 3 – OBLIGATIONS OF THE RECEIVING PARTY
+The Receiving Party agrees throughout the term of the Agreement to:
+
+• protect and keep strictly secret the Confidential Information, and treat it with the same degree of protection it grants to its own confidential information of similar importance;
+
+• disclose Confidential Information only to those members of its personnel who need to know it for the exclusive needs of the Project, and ensure that they are duly informed of the strictly confidential nature of such information;
+
+• not disclose Confidential Information to any third party without the prior written consent of the other Party; and
+
+• ensure that Confidential Information is not copied or duplicated, in whole or in part, for any purpose other than the exclusive needs of the Project.
+
+Similarly, Confidential Information disclosed to any parent company, subsidiary, or successor of the Receiving Party shall be protected under the terms of the Agreement.
+
+All Confidential Information disclosed by one Party to the other Party shall remain the property of the Disclosing Party and shall be returned to it as soon as possible upon its written request. However, the Receiving Party may retain one backup copy to comply with its regulatory, legal, and quality requirements.
+
+
+
+ARTICLE 4 – EXCEPTIONS
+The Receiving Party shall not be liable for the disclosure and/or use of Confidential Information and shall not be subject to any restriction if the information:
+
+• entered the public domain prior to its disclosure or subsequently, but in the latter case, in the absence of any fault attributable to the Receiving Party;
+
+• was already legitimately in the possession of the Receiving Party or known to it prior to its receipt, or was received from a third party in a lawful manner, without restriction or breach of confidentiality obligations;
+
+• was published without violating the provisions of the Agreement;
+
+• is generally accessible to the public other than as a result of disclosure by the Disclosing Party;
+
+• results from independent studies, works, or developments carried out by the Receiving Party without the use of Confidential Information received from the Disclosing Party, or without such acquisition being a consequence of Confidential Information received from the Disclosing Party;
+
+• its disclosure is required by applicable law, or by a decision of a competent court or administrative authority.
+
+In such case, the Receiving Party shall notify the Disclosing Party in writing as soon as possible, and the Disclosing Party shall inform the Receiving Party of the measures to be taken.
+
+
+
+ARTICLE 5 – AGREEMENT MANAGEMENT
+It is expressly agreed between the Parties that the persons identified below are responsible for the management of the Agreement and are, respectively, on behalf of the Party that authorized them, the only persons authorized to transmit and/or receive Confidential Information under the Agreement.
+
+FOR XXXX:                               FOR THE COMPANY:
+Name: XXXX                              Name: [representative_name]
+Title: XXXX                             Title: [representative_title]
+Email: XXXX                             Email: contact@company.com
+
+Each Party may, however, by written notice to the other Party, replace the persons designated above or designate other persons who will in turn be responsible for managing the Agreement and authorized to transmit and/or receive Confidential Information under the Agreement.
+
+
+
+ARTICLE 6 – INTELLECTUAL PROPERTY
+The communication of Confidential Information under the Agreement shall not be construed as granting, either expressly or implicitly, any right, title, or interest in any industrial property (license, patent, trademark, design, model, etc.), or any license under any know-how.
+
+The same applies to copyrights or other rights attached to literary and artistic property.
+
+
+
+ARTICLE 7 – SCOPE OF THE AGREEMENT
+No provision of the Agreement may be construed as obliging either Party to enter into any future contractual relationship with the other Party.
+
+
+
+ARTICLE 8 – TERM
+The Agreement shall take effect on its signature date and remain in force for a period of three (3) years and, beyond that, for a period of five (5) years after the end of the Project.
+
+
+
+ARTICLE 9 – GOVERNING LAW AND JURISDICTION
+The Agreement is governed by French law.
+
+Any dispute between the Parties relating to the existence, validity, interpretation, and performance of the Agreement, which could not be settled amicably between the Parties, shall be subject to the exclusive jurisdiction of the competent courts of Paris.
+
+
+
+ARTICLE 10 – FINAL PROVISIONS
+The Agreement constitutes the entire agreement of the Parties with respect to the Confidential Information exchanged within the framework of the Project and supersedes all preliminary agreements.
+
+It may only be modified by a written amendment signed by both Parties.

@@ -46,10 +46,12 @@ export const api = {
    */
   analyzeNDA: async (
     file: File,
+    language: 'fr' | 'en' = 'fr',
     onUploadProgress?: (progressEvent: any) => void
   ): Promise<AnalysisResponse> => {
     const formData = new FormData();
     formData.append('file', file);
+    formData.append('language', language);
 
     const response = await apiClient.post<AnalysisResponse>('/analyze', formData, {
       headers: {
@@ -62,10 +64,28 @@ export const api = {
   },
 
   /**
+   * Detect the language of a client NDA file.
+   */
+  detectLanguage: async (file: File): Promise<'fr' | 'en'> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await apiClient.post<{ language: 'fr' | 'en' }>('/detect-language', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    return response.data.language;
+  },
+
+  /**
    * Fetch reference files data from backend.
    */
-  getReferenceData: async (): Promise<ReferenceData> => {
-    const response = await apiClient.get<ReferenceData>('/reference');
+  getReferenceData: async (language: 'fr' | 'en' = 'fr'): Promise<ReferenceData> => {
+    const response = await apiClient.get<ReferenceData>('/reference', {
+      params: { language }
+    });
     return response.data;
   },
 
@@ -84,11 +104,12 @@ export const api = {
   /**
    * Fetch all clauses (active and inactive) for admin management.
    */
-  getAdminClauses: async (password: string): Promise<ClauseConfig[]> => {
+  getAdminClauses: async (password: string, language: 'fr' | 'en' = 'fr'): Promise<ClauseConfig[]> => {
     const response = await apiClient.get<ClauseConfig[]>('/admin/clauses', {
       headers: {
         'x-admin-password': password
-      }
+      },
+      params: { language }
     });
     return response.data;
   },
@@ -96,11 +117,16 @@ export const api = {
   /**
    * Create a new clause.
    */
-  createClause: async (password: string, clause: Omit<ClauseConfig, 'active'>): Promise<ClauseConfig> => {
+  createClause: async (
+    password: string,
+    clause: Omit<ClauseConfig, 'active'>,
+    language: 'fr' | 'en' = 'fr'
+  ): Promise<ClauseConfig> => {
     const response = await apiClient.post<ClauseConfig>('/admin/clauses', clause, {
       headers: {
         'x-admin-password': password
-      }
+      },
+      params: { language }
     });
     return response.data;
   },
@@ -112,7 +138,8 @@ export const api = {
   updateClause: async (
     password: string,
     id: string,
-    clause: Omit<ClauseConfig, 'id' | 'active'>
+    clause: Omit<ClauseConfig, 'id' | 'active'>,
+    language: 'fr' | 'en' = 'fr'
   ): Promise<{ message: string; oldClause: ClauseConfig; newClause: ClauseConfig }> => {
     const response = await apiClient.put<{ message: string; oldClause: ClauseConfig; newClause: ClauseConfig }>(
       `/admin/clauses/${id}`,
@@ -120,7 +147,8 @@ export const api = {
       {
         headers: {
           'x-admin-password': password
-        }
+        },
+        params: { language }
       }
     );
     return response.data;
@@ -129,14 +157,15 @@ export const api = {
   /**
    * Deactivate a clause.
    */
-  deactivateClause: async (password: string, id: string): Promise<ClauseConfig> => {
+  deactivateClause: async (password: string, id: string, language: 'fr' | 'en' = 'fr'): Promise<ClauseConfig> => {
     const response = await apiClient.patch<ClauseConfig>(
       `/admin/clauses/${id}/deactivate`,
       {},
       {
         headers: {
           'x-admin-password': password
-        }
+        },
+        params: { language }
       }
     );
     return response.data;
@@ -145,14 +174,15 @@ export const api = {
   /**
    * Reactivate a clause.
    */
-  reactivateClause: async (password: string, id: string): Promise<ClauseConfig> => {
+  reactivateClause: async (password: string, id: string, language: 'fr' | 'en' = 'fr'): Promise<ClauseConfig> => {
     const response = await apiClient.patch<ClauseConfig>(
       `/admin/clauses/${id}/reactivate`,
       {},
       {
         headers: {
           'x-admin-password': password
-        }
+        },
+        params: { language }
       }
     );
     return response.data;

@@ -1,0 +1,74 @@
+{
+  "clauses": [
+    {
+      "id": "Bilateralite",
+      "name": "Mutual or Bilateral Agreement",
+      "description": "The NDA proposed by the client must be mutual and reciprocal, as a client must accept the conditions they impose on the Company. Unilateral agreements or agreements that are more restrictive for the Company than its own standard NDA are unacceptable.",
+      "criticality": "Medium",
+      "active": true
+    },
+    {
+      "id": "DureeConfidentialite",
+      "name": "Duration of Confidentiality",
+      "description": "The confidentiality duration must be limited, preferably to 5 years after the end of each specific project or the Agreement itself. Providing for unlimited duration or durations exceeding 10 years is unacceptable, as technology and information become obsolete quickly.",
+      "criticality": "High",
+      "active": true
+    },
+    {
+      "id": "DivulgationLegale",
+      "name": "Legal and Regulatory Disclosures",
+      "description": "If the Company is forced to disclose information due to legal, accounting, or regulatory requirements, no prior approval or delay from the disclosing party should be required. The clause should simply state that the Company will notify the other party as soon as practicable.",
+      "criticality": "Medium",
+      "active": true
+    },
+    {
+      "id": "DestructionSauvegarde",
+      "name": "Return, Destruction and Backup Copies",
+      "description": "Upon termination of the NDA, documents must be destroyed or returned within 30 days of written request. Requiring immediate and complete destruction is unacceptable: the Company must be explicitly authorized to retain one copy for legal, quality control, audit, or traceability purposes, as well as in its automated IT backup systems.",
+      "criticality": "High",
+      "active": true
+    },
+    {
+      "id": "IntegraliteRapports",
+      "name": "Use of Reports and Deliverables",
+      "description": "the Company's reports or test results can only be used or distributed in their entirety, as partial reproduction could mislead the consumer or public. Providing for a transfer of intellectual property rights on deliverables, or authorizing the use of the Company's name/brand without prior written consent, is unacceptable.",
+      "criticality": "High",
+      "active": true
+    },
+    {
+      "id": "RecoursInjonctions",
+      "name": "Injunctive Relief and Irreparable Harm",
+      "description": "Typical Anglo-Saxon clauses granting automatic right to injunctive relief or specific performance ('injunctive relief') are unacceptable as they could prevent the Company from performing its public services or lead to operational blockages. Any remedy or indemnity must be assessed by a competent court with actual damage proven.",
+      "criticality": "High",
+      "active": true
+    },
+    {
+      "id": "JuridictionDroit",
+      "name": "Governing Law and Jurisdiction",
+      "description": "The Company's contracts must be governed by French law, and the competent courts must be located in France (preferably Paris). Clauses imposing foreign law or foreign courts are unacceptable, with Swiss law (Geneva jurisdiction) tolerated only for major international entities.",
+      "criticality": "Medium",
+      "active": true
+    },
+    {
+      "id": "ProprieteIntellectuelle",
+      "name": "Intellectual Property Rights",
+      "description": "The exchange of Confidential Information does not grant or transfer any intellectual property rights. Each party remains the sole owner of the information it transmits to the other party.",
+      "criticality": "High",
+      "active": true
+    },
+    {
+      "id": "PlafonnementIndemnites",
+      "name": "Indemnification and Liability Caps",
+      "description": "A party cannot unilaterally demand compensation or determine its amount. Any potential damages or indemnity must be determined by a third party (arbitrator or judge) based on proven losses, and liability must be capped in accordance with the Company's insurance coverage.",
+      "criticality": "High",
+      "active": true
+    },
+    {
+      "id": "ObjetContrat",
+      "name": "Scope of the Agreement",
+      "description": "The scope of the agreement must be strictly limited to confidentiality. The insertion of clauses dealing with service performance terms, orders, invoicing, or commercial commitments is unacceptable in a NDA.",
+      "criticality": "Medium",
+      "active": true
+    }
+  ]
+}

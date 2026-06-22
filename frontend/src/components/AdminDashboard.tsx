@@ -28,6 +28,8 @@ import {
   Snackbar,
   CircularProgress,
   Tooltip,
+  ToggleButton,
+  ToggleButtonGroup,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
@@ -55,6 +57,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const [passwordInput, setPasswordInput] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
+  const [language, setLanguage] = useState<'fr' | 'en'>('fr');
   const [clauses, setClauses] = useState<ClauseConfig[]>([]);
   const [loadingClauses, setLoadingClauses] = useState(false);
 
@@ -78,12 +81,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [toastSeverity, setToastSeverity] = useState<'success' | 'error'>('success');
 
-  // Load clauses when password becomes valid
+  // Load clauses when password or language changes
   useEffect(() => {
     if (adminPassword) {
-      loadClauses();
+      loadClauses(language);
     }
-  }, [adminPassword]);
+  }, [adminPassword, language]);
 
   // Generate ID automatically from Name for new clauses if not manually overridden
   useEffect(() => {
@@ -99,11 +102,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   }, [formName, dialogMode, manuallyEditedId]);
 
-  const loadClauses = async () => {
+  const loadClauses = async (targetLang: 'fr' | 'en' = 'fr') => {
     if (!adminPassword) return;
     setLoadingClauses(true);
     try {
-      const data = await api.getAdminClauses(adminPassword);
+      const data = await api.getAdminClauses(adminPassword, targetLang);
       // Sort: Active ones first, then alphabetical by name
       const sorted = [...data].sort((a, b) => {
         const aActive = a.active !== false ? 1 : 0;
@@ -186,7 +189,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           name: formName,
           description: formDescription,
           criticality: formCriticality,
-        });
+        }, language);
         showToast('Nouvelle clause créée avec succès !', 'success');
       } else {
         if (!editingId) return;
@@ -194,11 +197,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           name: formName,
           description: formDescription,
           criticality: formCriticality,
-        });
+        }, language);
         showToast('La clause a été modifiée (l\'ancienne version a été archivée comme inactive et une nouvelle version a été créée).', 'success');
       }
       setDialogOpen(false);
-      loadClauses();
+      loadClauses(language);
     } catch (err: any) {
       const errMsg = err.response?.data?.error || 'Une erreur est survenue lors de la sauvegarde de la clause.';
       showToast(errMsg, 'error');
@@ -213,11 +216,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleConfirmDeactivate = async () => {
     if (!adminPassword || !deactivatingClause) return;
     try {
-      await api.deactivateClause(adminPassword, deactivatingClause.id);
+      await api.deactivateClause(adminPassword, deactivatingClause.id, language);
       showToast(`La clause "${deactivatingClause.name}" a été rendue inactive.`, 'success');
       setDeactivateDialogOpen(false);
       setDeactivatingClause(null);
-      loadClauses();
+      loadClauses(language);
     } catch (err: any) {
       showToast('Échec de la désactivation de la clause.', 'error');
     }
@@ -226,9 +229,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleReactivate = async (clause: ClauseConfig) => {
     if (!adminPassword) return;
     try {
-      await api.reactivateClause(adminPassword, clause.id);
+      await api.reactivateClause(adminPassword, clause.id, language);
       showToast(`La clause "${clause.name}" a été réactivée avec succès.`, 'success');
-      loadClauses();
+      loadClauses(language);
     } catch (err: any) {
       showToast('Échec de la réactivation de la clause.', 'error');
     }
@@ -350,22 +353,56 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </Box>
         </Box>
 
-        <Button
-          variant="contained"
-          color="secondary"
-          startIcon={<AddIcon />}
-          onClick={handleOpenCreate}
-          sx={{
-            background: 'linear-gradient(90deg, #0891B2 0%, #06B6D4 100%)',
-            color: '#0B0F19',
-            fontWeight: 700,
-            '&:hover': {
-              boxShadow: '0 0 15px rgba(6, 182, 212, 0.6)',
-            },
-          }}
-        >
-          Nouvelle Clause
-        </Button>
+        <Stack direction="row" spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+          <ToggleButtonGroup
+            value={language}
+            exclusive
+            onChange={(_, newLang) => {
+              if (newLang !== null) {
+                setLanguage(newLang);
+              }
+            }}
+            size="small"
+            sx={{
+              '& .MuiToggleButton-root': {
+                px: 2,
+                py: 0.5,
+                fontSize: '0.8rem',
+                fontWeight: 700,
+                border: '1px solid rgba(255,255,255,0.08)',
+                color: 'text.secondary',
+                '&.Mui-selected': {
+                  color: '#06B6D4',
+                  backgroundColor: 'rgba(6, 182, 212, 0.12)',
+                  borderColor: 'rgba(6, 182, 212, 0.4)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(6, 182, 212, 0.2)',
+                  }
+                }
+              }
+            }}
+          >
+            <ToggleButton value="fr">🇫🇷 Français</ToggleButton>
+            <ToggleButton value="en">🇬🇧 Anglais</ToggleButton>
+          </ToggleButtonGroup>
+
+          <Button
+            variant="contained"
+            color="secondary"
+            startIcon={<AddIcon />}
+            onClick={handleOpenCreate}
+            sx={{
+              background: 'linear-gradient(90deg, #0891B2 0%, #06B6D4 100%)',
+              color: '#0B0F19',
+              fontWeight: 700,
+              '&:hover': {
+                boxShadow: '0 0 15px rgba(6, 182, 212, 0.6)',
+              },
+            }}
+          >
+            Nouvelle Clause
+          </Button>
+        </Stack>
       </Box>
 
       {/* Main content table of clauses */}

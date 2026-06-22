@@ -1,0 +1,65 @@
+{
+  "clauses": [
+    {
+      "id": "Bilateralite",
+      "name": "Caractère bilatéral de l'accord",
+      "description": "Le NDA proposé par le client doit impérativement être bilatéral et réciproque, car un client doit accepter les conditions qu’il impose à son fournisseur. Il est inacceptable que l'accord soit plus contraignant que le NDA type de l'entreprise.",
+      "criticality": "Medium",
+      "active": true
+    },
+    {
+      "id": "DureeConfidentialite",
+      "name": "Durée de la confidentialité",
+      "description": "La durée de confidentialité doit être limitée, de préférence à 5 ans après la fin de chaque projet spécifique. Il est inacceptable de prévoir des durées illimitées ou supérieures à 10 ans, car les techniques deviennent rapidement obsolètes.",
+      "criticality": "High"
+    },
+    {
+      "id": "DivulgationLegale",
+      "name": "Obligations légales et réglementaires",
+      "description": "Si l'entreprise est contrainte de divulguer des informations pour des raisons légales, comptables ou réglementaires, aucun délai ou accord préalable de la partie divulgatrice ne doit être exigé. La clause doit simplement stipuler que l'entreprise en informera l'autre partie dans les meilleurs délais.",
+      "criticality": "Medium"
+    },
+    {
+      "id": "DestructionSauvegarde",
+      "name": "Destruction et copies de sauvegarde",
+      "description": "À l'issue du NDA, les documents doivent être détruits ou restitués dans un délai de 30 jours sur demande écrite. L'exigence de destruction immédiate et totale est inacceptable : l'entreprise doit explicitement être autorisée à conserver une copie pour ses obligations légales, qualité ou de traçabilité, ainsi que dans ses systèmes de sauvegarde informatique (backups).",
+      "criticality": "High"
+    },
+    {
+      "id": "IntegraliteRapports",
+      "name": "Utilisation des rapports et livrables",
+      "description": "Les rapports de l'entreprise ne peuvent être utilisés ou diffusés que dans leur entièreté, car une reproduction partielle peut tromper le consommateur. Il est inacceptable de prévoir une cession de droits sur ces livrables ou d'autoriser l'utilisation de la marque de l'entreprise sans accord écrit préalable.",
+      "criticality": "High"
+    },
+    {
+      "id": "RecoursInjonctions",
+      "name": "Injonctions et préjudice irréparable",
+      "description": "Les clauses typiquement anglo-saxonnes prévoyant un droit automatique à des injonctions ou exécutions spécifiques ('injunctive relief') sont inacceptables car elles pourraient empêcher l'entreprise de réaliser ses prestations. Tout recours ou indemnisation doit être apprécié par un juge compétent et le préjudice dûment prouvé.",
+      "criticality": "High"
+    },
+    {
+      "id": "JuridictionDroit",
+      "name": "Droit applicable et tribunaux",
+      "description": "Le contrat doit être soumis au droit français et le tribunal compétent doit être en France (idéalement Paris). Une clause imposant un droit étranger est inacceptable, à l'exception du droit suisse (Genève) qui peut être toléré pour des entreprises internationales.",
+      "criticality": "Medium"
+    },
+    {
+      "id": "ProprieteIntellectuelle",
+      "name": "Propriété intellectuelle des informations",
+      "description": "La communication d'informations ne doit générer aucun droit ou transfert de propriété intellectuelle. Chaque partie doit rester strictement propriétaire des informations qu'elle transmet à l'autre partie.",
+      "criticality": "High"
+    },
+    {
+      "id": "PlafonnementIndemnites",
+      "name": "Dédommagement et indemnités",
+      "description": "Une partie ne peut exiger unilatéralement une indemnisation ou fixer son montant. Les indemnités éventuelles doivent être déterminées par un tiers (arbitre ou juge) en analysant le préjudice, et les montants doivent être plafonnés au niveau des assurances de l'entreprise.",
+      "criticality": "High"
+    },
+    {
+      "id": "ObjetContrat",
+      "name": "Objet exclusif du NDA",
+      "description": "Le périmètre de l'accord doit être strictement limité à la confidentialité. L'insertion de clauses traitant des modalités de réalisation de la prestation de service, de commandes ou de facturation est inacceptable dans un NDA.",
+      "criticality": "Medium"
+    }
+  ]
+}

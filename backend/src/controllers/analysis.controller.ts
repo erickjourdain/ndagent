@@ -27,12 +27,14 @@ export class AnalysisController {
         return;
       }
 
+      const language = (req.body.language === 'en' || req.query.language === 'en') ? 'en' : 'fr';
+
       // 1. Read Reference files from disk (fallback to example files if not present)
       const referenceDir = getReferenceDir();
-      const referenceNdaPath = path.join(referenceDir, 'reference-nda.txt');
-      const referenceNdaExamplePath = path.join(referenceDir, 'reference-nda.example.txt');
-      const clausierPath = path.join(referenceDir, 'clausier.json');
-      const clausierExamplePath = path.join(referenceDir, 'clausier.example.json');
+      const referenceNdaPath = path.join(referenceDir, language === 'en' ? 'reference-nda_en.txt' : 'reference-nda_fr.txt');
+      const referenceNdaExamplePath = path.join(referenceDir, language === 'en' ? 'reference-nda_en.txt' : 'reference-nda_fr.example.txt');
+      const clausierPath = path.join(referenceDir, language === 'en' ? 'clausier_en.json' : 'clausier_fr.json');
+      const clausierExamplePath = path.join(referenceDir, language === 'en' ? 'clausier_en.json' : 'clausier_fr.example.json');
 
       let referenceNdaText = '';
       let clausierJson = { clauses: [] };
@@ -42,9 +44,9 @@ export class AnalysisController {
       } catch (err) {
         try {
           referenceNdaText = await fs.readFile(referenceNdaExamplePath, 'utf8');
-          console.log('Using reference-nda.example.txt fallback');
+          console.log(`Using ${path.basename(referenceNdaExamplePath)} fallback`);
         } catch (exErr) {
-          console.warn('Could not read reference-nda.txt or reference-nda.example.txt, using empty default:', exErr);
+          console.warn(`Could not read ${path.basename(referenceNdaPath)} or ${path.basename(referenceNdaExamplePath)}, using empty default:`, exErr);
         }
       }
 
@@ -55,9 +57,9 @@ export class AnalysisController {
         try {
           const clausierRaw = await fs.readFile(clausierExamplePath, 'utf8');
           clausierJson = JSON.parse(clausierRaw);
-          console.log('Using clausier.example.json fallback');
+          console.log(`Using ${path.basename(clausierExamplePath)} fallback`);
         } catch (exErr) {
-          console.warn('Could not read clausier.json or clausier.example.json, using empty default:', exErr);
+          console.warn(`Could not read ${path.basename(clausierPath)} or ${path.basename(clausierExamplePath)}, using empty default:`, exErr);
         }
       }
 
@@ -79,7 +81,8 @@ export class AnalysisController {
       const analysisResult = await OllamaService.analyzeNDA(
         clientNdaText,
         referenceNdaText,
-        clausierJson
+        clausierJson,
+        language
       );
 
       res.status(200).json(analysisResult);
@@ -94,11 +97,12 @@ export class AnalysisController {
    */
   static async getReferenceData(req: Request, res: Response): Promise<void> {
     try {
+      const language = req.query.language === 'en' ? 'en' : 'fr';
       const referenceDir = getReferenceDir();
-      const referenceNdaPath = path.join(referenceDir, 'reference-nda.txt');
-      const referenceNdaExamplePath = path.join(referenceDir, 'reference-nda.example.txt');
-      const clausierPath = path.join(referenceDir, 'clausier.json');
-      const clausierExamplePath = path.join(referenceDir, 'clausier.example.json');
+      const referenceNdaPath = path.join(referenceDir, language === 'en' ? 'reference-nda_en.txt' : 'reference-nda_fr.txt');
+      const referenceNdaExamplePath = path.join(referenceDir, language === 'en' ? 'reference-nda_en.txt' : 'reference-nda_fr.example.txt');
+      const clausierPath = path.join(referenceDir, language === 'en' ? 'clausier_en.json' : 'clausier_fr.json');
+      const clausierExamplePath = path.join(referenceDir, language === 'en' ? 'clausier_en.json' : 'clausier_fr.example.json');
 
       let referenceNda = '';
       try {
@@ -126,6 +130,33 @@ export class AnalysisController {
     } catch (error: any) {
       console.error('Failed to load reference data:', error);
       res.status(500).json({ error: 'Échec de la récupération de la configuration des fichiers de référence.' });
+    }
+  }
+
+  /**
+   * Detect the language of an uploaded file.
+   */
+  static async detectLanguage(req: Request, res: Response): Promise<void> {
+    try {
+      const file = req.file;
+      if (!file) {
+        res.status(400).json({ error: 'Veuillez charger un fichier.' });
+        return;
+      }
+
+      console.log(`Detecting language for file ${file.originalname}...`);
+      const text = await FileParserService.parseFile(file.buffer, file.mimetype);
+
+      if (!text || text.trim().length === 0) {
+        res.status(400).json({ error: 'Impossible d\'extraire le texte pour détecter la langue.' });
+        return;
+      }
+
+      const detectedLang = FileParserService.detectLanguage(text);
+      res.status(200).json({ language: detectedLang });
+    } catch (error: any) {
+      console.error('Error during language detection:', error);
+      res.status(500).json({ error: error.message || 'Une erreur interne est survenue lors de la détection de la langue.' });
     }
   }
 }

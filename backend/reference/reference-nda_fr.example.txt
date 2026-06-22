@@ -1,0 +1,151 @@
+ACCORD DE CONFIDENTIALITÉ
+
+
+
+ENTRE :
+
+--------------------------------, société ----------------------------- au capital de ------------ Euros, dont le siège social est situé -------------------------------------, immatriculée au registre du commerce de --------------------- sous le N° --------------------------- représentée par ------------------------ en sa qualité de -------------------------------, dûment habilité aux fins des présentes, ci-après dénommée "---------------",
+
+D'une part ; 
+
+
+
+
+
+ET :
+
+[NOM_SOCIETE], [FORME_JURIDIQUE] au capital de [MONTANT] Euros, dont le siège social est situé [ADRESSE_SIEGE], immatriculée au Registre du Commerce et des Sociétés de [VILLE] sous le numéro [NUMERO_RCS], représentée par [PRENOM_NOM], en qualité de [FONCTION], ci-après dénommée la «Société»,
+
+D’autre part,
+
+
+
+
+
+Ces dernières étant ci-après dénommée individuellement une "Partie" et collectivement les "Parties".
+
+
+
+ETANT PREALABLEMENT RAPPELE QUE :
+
+
+
+• ------------------------------- exerce ses activités dans le domaine de ------------------------------
+
+• La Société exerce ses activités dans le domaine de [ACTIVITE_SOCIETE].
+
+• ----------------------------- et la Société souhaitent s'échanger certaines informations en vue de leur collaboration dans le cadre de ------------------------------------------------ (ci-après le "Projet").
+
+
+
+LES PARTIES SONT CONVENUES DE CE QUI SUIT :
+
+
+
+ARTICLE 1 – OBJET DE L’ACCORD
+
+L’objet du présent accord de confidentialité (ci-après l’ « Accord ») est de définir les conditions d’échange, d’utilisation et de protection des informations confidentielles transmises par une Partie (ci-après la Partie « Emettrice ») à l’autre Partie (ci-après la Partie « Réceptrice ») pour les besoins du Projet.
+
+
+
+ARTICLE 2 – CONFIDENTIALITE DES INFORMATIONS
+
+Les Parties conviennent que sont confidentielles (ci-après les "Informations Confidentielles") toute information quelle que soit sa nature (technique, scientifique, industrielle, commerciale, financière ou autre) et notamment, sans que cette liste ne soit limitative, les échantillons, matériaux, dessins, modèles, brevets, plans, formules, procédés, spécifications, méthodes, techniques analytiques, procédures, manuels techniques, correspondances, études, rapports, algorithmes, logiciels (codes sources, codes objet, documentation associée), communiquée dans le cadre de l’exécution de l’Accord par l’une des Parties à l’autre Partie, quel que soit le support (par écrit, oralement, ou par tout autre moyen y compris informatique) et identifiée comme confidentielle par la mention « Confidentiel » ou toute autre mention écrite équivalente et établissant sans équivoque leur nature confidentielle. 
+
+Cependant, pour toute divulgation ne permettant pas l'apposition d'une telle mention, la Partie Emettrice confirmera ce caractère d’Information Confidentielle par écrit à la Partie Réceptrice dans les quinze (15) jours suivant cette communication, étant entendu que la Partie Réceptrice considérera les informations ainsi reçues pendant ce délai de quinze jours comme des Informations Confidentielles.
+
+
+
+ARTICLE 3 – OBLIGATIONS DE LA PARTIE RECEPTRICE
+
+La Partie Réceptrice s'engage pendant toute la durée de l’Accord à :
+
+• protéger et garder strictement secrètes les Informations Confidentielles, et à les traiter avec le même degré de protection qu'elle accorde à ses propres informations confidentielles de même importance ;
+
+• ne divulguer qu'aux seuls membres de son personnel ayant à en connaître pour les besoins exclusifs du Projet, et à s'assurer que ces derniers soient dûment informés du caractère strictement  confidentiel de ces informations ;
+
+• ne divulguer à aucun tiers les Informations Confidentielles sans l'accord écrit préalable de l’autre Partie ; et
+
+• ne soient pas copiées ou dupliquées, totalement ou partiellement, pour d'autres besoins que pour les besoins exclusifs du Projet.
+
+De la même manière, les Informations Confidentielles qui seraient transmises à toute société mère, filiale ou successeur de la partie Réceptrice seront protégées dans les conditions prévues à l’Accord.
+
+Toutes les Informations Confidentielles transmises par une Partie à l’autre Partie resteront la propriété de la Partie qui les a communiquées et devront être restituées à cette dernière dans les meilleurs délais, sur la demande écrite de cette dernière. Cependant, la Partie réceptrice pourra garder une copie de sauvegarde pour répondre à ses besoins réglementaires, légaux et qualité. 
+
+
+
+
+
+
+
+ARTICLE 4 – EXCEPTIONS
+
+La Partie Réceptrice ne sera pas responsable de la divulgation et/ou de l’utilisation d’une Information Confidentielle et ne sera soumise à aucune restriction si celle-ci :
+
+• est entrée dans le domaine public préalablement à sa divulgation ou postérieurement mais dans ce cas, en l'absence de toute faute qui lui soit imputable ;
+
+• est déjà légitimement en la possession de la Partie Réceptrice ou connue d'elle, préalablement à sa réception ou a été reçue d'un tiers de manière licite, sans restriction ni violation d'obligations de confidentialité ; 
+
+• a été publiée sans contrevenir aux dispositions de l’Accord ;
+
+• est généralement accessible au public autrement qu’à la suite d’une divulgation par la Partie Émettrice ;
+
+• résulte d’études, de travaux propres ou de développements réalisés par la Partie Réceptrice de manière indépendante et sans utilisation d’Informations Confidentielles reçue de la Partie Emettrice, ou sans que leur obtention soit une conséquence d’Informations Confidentielles reçues de la partie Emettrice ;
+
+• sa divulgation est imposée par la loi applicable, ou par une décision d'un tribunal ou d'une autorité administrative compétente.
+
+Dans ce cas, la Partie Réceptrice en notifiera par écrit au plus vite la Partie Emettrice, qui informera la Partie Réceptrice des mesures à prendre.
+
+
+
+ARTICLE 5 – GESTION DE L'ACCORD
+
+Il est expressément convenu entre les Parties que les personnes identifiées ci-dessous sont chargées de la gestion de l’Accord et sont respectivement, pour le compte de la Partie qui les a habilitées, les seules autorisées à transmettre et/ou recevoir des informations Confidentielles au titre de l’Accord. 
+
+POUR XXXX POUR LA SOCIETE
+
+Nom : XXXX Nom : XXXX
+
+Fonction : XXXX Fonction : XXXX
+
+Adresse mail : XXXX Adresse mail : XXXX
+
+
+
+Chaque Partie pourra néanmoins, par une notification écrite à l’autre Partie, remplacer les personnes qu’elle a désignées ci-dessus ou désigner d’autres personnes qui seront à leur tour chargées de la gestion de l’Accord et habilitées à transmettre et/ou recevoir les Informations Confidentielles au titre de l’Accord.
+
+
+
+ARTICLE 6 – PROPRIETE INTELLECTUELLE
+
+La communication dans le cadre de l’Accord d’Informations Confidentielles ne saurait être interprétée comme accordant, de manière express ou implicite, sur les Informations Confidentielles un quelconque droit ou titre de propriété industrielle (licence, brevet, marque, dessin, modèle…), ni une  licence sur un quelconque savoir-faire.
+
+Il en est de même en ce qui concerne les droits d’auteur ou autres droits attachés à la propriété littéraire et artistique.
+
+
+
+ARTICLE 7 – PORTEE DE L'ACCORD
+
+Aucune disposition de l'Accord ne peut être interprétée comme obligeant l'autre Partie à se lier contractuellement avec l’Autre Partie pour l'avenir.
+
+
+
+ARTICLE 8 – DUREE 
+
+L'Accord prend effet à compter de sa date de signature et reste en vigueur pendant une durée de trois(3) ans  et au-delà, pendant une durée de cinq (5) ans après la fin du Projet.
+
+
+
+ARTICLE 9 – DROIT APPLICABLE ET JURIDICTION COMPETENTE
+
+L'Accord est soumis au droit français.
+
+Tout différend entre les Parties relatif à l’existence, la validité, l’interprétation et l’exécution de l’Accord et qui n’aurait pu être réglé à l’amiable entre les Parties, sera soumis à la compétence exclusive des juridictions compétentes de Paris.
+
+
+
+ARTICLE 10 – DISPOSITIONS FINALES
+
+L'Accord constitue la totalité des engagements des Parties relatifs aux Informations Confidentielles échangées dans le cadre du Projet et se substitue à tous accords préliminaires.
+
+Il ne pourra être modifié que par voie d’avenant signé des deux Parties.

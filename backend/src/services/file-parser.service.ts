@@ -41,4 +41,31 @@ export class FileParserService {
       throw new Error(`Failed to parse DOCX file: ${error.message}`);
     }
   }
+
+  /**
+   * Simple stopword heuristic to detect if text is French or English.
+   */
+  static detectLanguage(text: string): 'fr' | 'en' {
+    const cleanedText = text.toLowerCase();
+    
+    // Stopwords lists
+    const frStopwords = ['le', 'la', 'les', 'et', 'de', 'des', 'en', 'est', 'que', 'un', 'une', 'dans', 'avec', 'pour', 'qui', 'sur', 'accord', 'confidentialite'];
+    const enStopwords = ['the', 'and', 'of', 'to', 'in', 'is', 'that', 'it', 'with', 'for', 'this', 'agreement', 'confidentiality', 'herein', 'between'];
+    
+    let frCount = 0;
+    let enCount = 0;
+    
+    // Tokenize simple words
+    const words = cleanedText.match(/\b\w+\b/g) || [];
+    
+    for (const word of words) {
+      if (frStopwords.includes(word)) {
+        frCount++;
+      } else if (enStopwords.includes(word)) {
+        enCount++;
+      }
+    }
+    
+    return frCount >= enCount ? 'fr' : 'en';
+  }
 }

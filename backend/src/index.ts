@@ -29,6 +29,7 @@ const upload = multer({
 
 // App Routes
 app.post('/api/analyze', upload.single('file'), AnalysisController.analyze);
+app.post('/api/detect-language', upload.single('file'), AnalysisController.detectLanguage);
 app.get('/api/reference', AnalysisController.getReferenceData);
 
 // Admin Routes

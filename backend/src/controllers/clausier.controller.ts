@@ -19,17 +19,17 @@ export interface Clause {
   active?: boolean;
 }
 
-const getClausierPath = () => {
-  return path.join(getReferenceDir(), 'clausier.json');
+const getClausierPath = (language: string = 'fr') => {
+  return path.join(getReferenceDir(), language === 'en' ? 'clausier_en.json' : 'clausier_fr.json');
 };
 
-const getClausierExamplePath = () => {
-  return path.join(getReferenceDir(), 'clausier.example.json');
+const getClausierExamplePath = (language: string = 'fr') => {
+  return path.join(getReferenceDir(), language === 'en' ? 'clausier_en.json' : 'clausier_fr.example.json');
 };
 
-async function readClausierFile(): Promise<Clause[]> {
-  const p = getClausierPath();
-  const ep = getClausierExamplePath();
+async function readClausierFile(language: string = 'fr'): Promise<Clause[]> {
+  const p = getClausierPath(language);
+  const ep = getClausierExamplePath(language);
   let raw = '';
   try {
     raw = await fs.readFile(p, 'utf-8');
@@ -48,8 +48,8 @@ async function readClausierFile(): Promise<Clause[]> {
   }
 }
 
-async function writeClausierFile(clauses: Clause[]): Promise<void> {
-  const p = getClausierPath();
+async function writeClausierFile(clauses: Clause[], language: string = 'fr'): Promise<void> {
+  const p = getClausierPath(language);
   const data = { clauses };
   await fs.writeFile(p, JSON.stringify(data, null, 2), 'utf-8');
 }
@@ -86,7 +86,8 @@ export class ClausierController {
    */
   static async getClauses(req: Request, res: Response): Promise<void> {
     try {
-      const clauses = await readClausierFile();
+      const language = req.query.language === 'en' ? 'en' : 'fr';
+      const clauses = await readClausierFile(language);
       // Explicitly set active default to true for backward compatibility
       const formattedClauses = clauses.map(c => ({
         ...c,
@@ -104,13 +105,14 @@ export class ClausierController {
    */
   static async createClause(req: Request, res: Response): Promise<void> {
     try {
+      const language = (req.body.language === 'en' || req.query.language === 'en') ? 'en' : 'fr';
       const { id, name, description, criticality } = req.body;
       if (!id || !name || !description || !criticality) {
         res.status(400).json({ error: 'Tous les champs sont requis (id, name, description, criticality).' });
         return;
       }
 
-      const clauses = await readClausierFile();
+      const clauses = await readClausierFile(language);
       if (clauses.some(c => c.id.toLowerCase() === id.toLowerCase())) {
         res.status(400).json({ error: `Une clause avec l'identifiant "${id}" existe déjà.` });
         return;
@@ -125,7 +127,7 @@ export class ClausierController {
       };
 
       clauses.push(newClause);
-      await writeClausierFile(clauses);
+      await writeClausierFile(clauses, language);
       res.status(201).json(newClause);
     } catch (error: any) {
       console.error('Failed to create clause:', error);
@@ -138,6 +140,7 @@ export class ClausierController {
    */
   static async updateClause(req: Request, res: Response): Promise<void> {
     try {
+      const language = (req.body.language === 'en' || req.query.language === 'en') ? 'en' : 'fr';
       const { id } = req.params;
       const { name, description, criticality } = req.body;
 
@@ -146,7 +149,7 @@ export class ClausierController {
         return;
       }
 
-      const clauses = await readClausierFile();
+      const clauses = await readClausierFile(language);
       const index = clauses.findIndex(c => c.id === id);
       if (index === -1) {
         res.status(404).json({ error: `La clause avec l'identifiant "${id}" n'existe pas.` });
@@ -183,7 +186,7 @@ export class ClausierController {
       };
 
       clauses.push(newClause);
-      await writeClausierFile(clauses);
+      await writeClausierFile(clauses, language);
 
       res.status(200).json({
         message: 'Clause modifiée avec succès. L\'ancienne version a été désactivée.',
@@ -201,9 +204,10 @@ export class ClausierController {
    */
   static async deactivateClause(req: Request, res: Response): Promise<void> {
     try {
+      const language = req.query.language === 'en' ? 'en' : 'fr';
       const { id } = req.params;
 
-      const clauses = await readClausierFile();
+      const clauses = await readClausierFile(language);
       const index = clauses.findIndex(c => c.id === id);
       if (index === -1) {
         res.status(404).json({ error: `La clause avec l'identifiant "${id}" n'existe pas.` });
@@ -211,7 +215,7 @@ export class ClausierController {
       }
 
       clauses[index].active = false;
-      await writeClausierFile(clauses);
+      await writeClausierFile(clauses, language);
 
       res.status(200).json(clauses[index]);
     } catch (error: any) {
@@ -225,9 +229,10 @@ export class ClausierController {
    */
   static async reactivateClause(req: Request, res: Response): Promise<void> {
     try {
+      const language = req.query.language === 'en' ? 'en' : 'fr';
       const { id } = req.params;
 
-      const clauses = await readClausierFile();
+      const clauses = await readClausierFile(language);
       const index = clauses.findIndex(c => c.id === id);
       if (index === -1) {
         res.status(404).json({ error: `La clause avec l'identifiant "${id}" n'existe pas.` });
@@ -235,7 +240,7 @@ export class ClausierController {
       }
 
       clauses[index].active = true;
-      await writeClausierFile(clauses);
+      await writeClausierFile(clauses, language);
 
       res.status(200).json(clauses[index]);
     } catch (error: any) {
