@@ -84,6 +84,11 @@ function App() {
     }
   };
 
+  const handleFileClear = () => {
+    setAnalysisResult(null);
+    setAnalyzedFileName('');
+  };
+
   return (
     <Container maxWidth="xl" sx={{ py: 4, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
 
@@ -187,6 +192,7 @@ function App() {
                   </Typography>
                   <FileUploader
                     onFileSelect={handleFileSelect}
+                    onFileClear={handleFileClear}
                     isAnalyzing={isAnalyzing}
                     uploadProgress={uploadProgress}
                   />

@@ -6,12 +6,14 @@ import CloseIcon from '@mui/icons-material/Close';
 
 interface FileUploaderProps {
   onFileSelect: (file: File) => void;
+  onFileClear?: () => void;
   isAnalyzing: boolean;
   uploadProgress: number;
 }
 
 export const FileUploader: React.FC<FileUploaderProps> = ({
   onFileSelect,
+  onFileClear,
   isAnalyzing,
   uploadProgress,
 }) => {
@@ -70,6 +72,9 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
     setSelectedFile(null);
     if (inputRef.current) {
       inputRef.current.value = '';
+    }
+    if (onFileClear) {
+      onFileClear();
     }
   };
 
