@@ -1,77 +1,78 @@
-# NDA Guardian - AI-Powered Client NDA compliance analyzer
+# NDAgent - Analyseur de conformité de NDA client alimenté par l'IA
 
-NDA Guardian is a web application designed to automate the process of reviewing client NDAs. It extracts text from uploaded client NDAs (PDF or DOCX), compares the clauses against a backend-managed **Reference NDA** and a specific compliance checklist (**clausier**), and identifies compliance issues using local **Ollama** AI models.
+NDAgent est une application web conçue pour automatiser le processus de révision des accords de non-divulgation (NDA) des clients. Elle extrait le texte des NDA clients téléchargés (au format PDF ou DOCX), compare les clauses à un **NDA de référence** géré par le backend et à une liste de contrôle de conformité spécifique (**clausier**), puis identifie les problèmes de conformité à l'aide de modèles d'IA **Ollama** locaux.
 
 ## Architecture
-- **Backend**: Node.js/Express, TypeScript, Multer, PDF-Parse, Mammoth, native fetch connection to Ollama API.
-- **Frontend**: React (Vite, TypeScript), Axios, Material UI (MUI).
-- **Orchestration**: Docker, Docker Compose, Nginx (as static host and reverse proxy).
+- **Backend** : Node.js/Express, TypeScript, Multer, PDF-Parse, Mammoth, connexion fetch native à l'API Ollama.
+- **Frontend** : React (Vite, TypeScript), Axios, Material UI (MUI).
+- **Orchestration** : Docker, Docker Compose, Nginx (comme hôte statique et reverse proxy).
 
 ---
 
-## Prerequisites
+## Prérequis
 1. **Node.js** (v18+) & **npm**
-2. **Docker** & **Docker Compose** (for production mode)
-3. **Ollama** (installed and running locally)
-   - Download from: [ollama.com](https://ollama.com)
-   - Pull the required model (default is `mistral`, can be configured in `.env`):
+2. **Docker** & **Docker Compose** (pour le mode production)
+3. **Ollama** (installé et démarré localement)
+   - Téléchargement sur : [ollama.com](https://ollama.com)
+   - Récupérez le modèle requis (le modèle par défaut est `mistral`, configurable dans le fichier `.env` en développement ou `docker-compose.yml` en production) :
      ```bash
      ollama pull mistral
      ```
 
 ---
 
-## Development Mode
+## Mode Développement
 
-Run the frontend and backend in separate terminals for hot reloading:
+Lancez le frontend et le backend dans des terminaux distincts pour bénéficier du rechargement à chaud (hot reloading) :
 
-### 1. Start the Backend
-1. Go to the `backend` folder:
+### 1. Démarrer le Backend
+1. Allez dans le dossier `backend` :
    ```bash
    cd backend
    ```
-2. Install dependencies:
+2. Installez les dépendances :
    ```bash
    npm install
    ```
-3. Set your configurations in `.env` (configured by default).
-4. Run in watch development mode:
+3. Définissez vos configurations dans le fichier `.env` (déjà configuré par défaut).
+4. Lancez le serveur en mode développement :
    ```bash
    npm run dev
    ```
-   *The backend starts at: `http://localhost:3000`*
+   *Le backend démarre à l'adresse : `http://localhost:3000`*
 
-### 2. Start the Frontend
-1. Go to the `frontend` folder:
+### 2. Démarrer le Frontend
+1. Allez dans le dossier `frontend` :
    ```bash
    cd frontend
    ```
-2. Set your configuration in `.env` (`VITE_API_URL=http://localhost:3000/api`).
-3. Run in development mode:
+2. Définissez votre configuration dans le fichier `.env` (`VITE_API_URL=http://localhost:3000/api`).
+3. Lancez l'application en mode développement :
    ```bash
    npm run dev
    ```
-   *The frontend starts at: `http://localhost:5173`*
+   *Le frontend démarre à l'adresse : `http://localhost:5173`*
 
 ---
 
-## Production / Containerized Mode
+## Mode Production / Conteneurisé
 
-You can run the entire application containerized using Docker Compose:
+Vous pouvez exécuter l'ensemble de l'application de manière conteneurisée à l'aide de Docker Compose :
 
-1. Build and run the containers from the project root:
+1. Définissez ou ajustez les variables d'environnement du backend (telles que `OLLAMA_API_URL`, `OLLAMA_MODEL`, `OLLAMA_NUM_CTX` ou `ADMIN_PASSWORD`) directement dans le fichier `docker-compose.yml` sous la section `environment` du service `backend`.
+2. Construisez et lancez les conteneurs depuis la racine du projet :
    ```bash
    docker-compose up --build
    ```
-2. Open your browser at:
-   - **Frontend**: `http://localhost:3030`
-   - **Backend Health Check**: `http://localhost:3000/api/health`
+3. Ouvrez votre navigateur aux adresses suivantes :
+   - **Frontend** : `http://localhost:3030`
+   - **Vérification de l'état du Backend (Health Check)** : `http://localhost:3000/api/health`
 
-*Note: In Docker, the backend communicates with the host machine's Ollama instance via the hostname `host.docker.internal`.*
+*Note : Dans Docker, le backend communique avec l'instance Ollama de la machine hôte via le nom d'hôte `host.docker.internal`.*
 
 ---
 
-## Reference Configurations
-The reference documents are located in:
-- `backend/reference/reference-nda.txt`: The golden standard agreement template.
-- `backend/reference/clausier.json`: The rules checklist defining conditions (High/Medium/Low criticality description).
+## Configurations de Référence
+Les documents de référence sont situés dans :
+- `backend/reference/reference-nda.txt` : Le modèle d'accord standard de référence.
+- `backend/reference/clausier.json` : La liste de contrôle des règles définissant les conditions (descriptions des niveaux de criticité Élevé/Moyen/Faible).
