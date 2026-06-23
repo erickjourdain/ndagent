@@ -43,6 +43,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 import { api } from '../api/client';
 import type { ClauseConfig } from '../api/client';
+import FlagIcon from './FlagIcon';
 
 interface AdminDashboardProps {
   onBack: () => void;
@@ -382,8 +383,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               }
             }}
           >
-            <ToggleButton value="fr">🇫🇷 Français</ToggleButton>
-            <ToggleButton value="en">🇬🇧 Anglais</ToggleButton>
+            <ToggleButton value="fr"><FlagIcon country="FR" /> Français</ToggleButton>
+            <ToggleButton value="en"><FlagIcon country="GB" /> Anglais</ToggleButton>
           </ToggleButtonGroup>
 
           <Button

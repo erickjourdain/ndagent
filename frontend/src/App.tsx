@@ -27,6 +27,7 @@ import AdminDashboard from './components/AdminDashboard';
 import { api } from './api/client';
 import type { ReferenceData, AnalysisResponse } from './api/client';
 import SettingsIcon from '@mui/icons-material/Settings';
+import FlagIcon from './components/FlagIcon';
 
 function App() {
   const [view, setView] = useState<'dashboard' | 'admin'>('dashboard');
@@ -240,10 +241,10 @@ function App() {
                     size="small"
                   >
                     <ToggleButton value="fr">
-                      🇫🇷 Français
+                      <FlagIcon country="FR" /> Français
                     </ToggleButton>
                     <ToggleButton value="en">
-                      🇬🇧 Anglais
+                      <FlagIcon country="GB" /> Anglais
                     </ToggleButton>
                   </ToggleButtonGroup>
 
