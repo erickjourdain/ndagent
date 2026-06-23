@@ -21,8 +21,9 @@ RUN npm ci --omit=dev
 # Copy compiled code from builder
 COPY --from=builder /usr/src/app/dist ./dist
 
-# Copy reference documents needed at runtime
+# Copy reference documents and prompt templates needed at runtime
 COPY reference ./reference
+COPY prompt ./prompt
 
 EXPOSE 3000
 

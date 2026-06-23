@@ -17,7 +17,8 @@ const getPromptDir = () => {
 
 const OLLAMA_API_URL = process.env.OLLAMA_API_URL || 'http://localhost:11434';
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'mistral';
-const OLLAMA_NUM_CTX = parseInt(process.env.OLLAMA_NUM_CTX || '20000', 10);
+const OLLAMA_NUM_CTX = parseInt(process.env.OLLAMA_NUM_CTX || '12288', 10);
+const OLLAMA_KEEP_ALIVE = process.env.OLLAMA_KEEP_ALIVE || '1h';
 
 export const ClauseAnalysisResultSchema = z.object({
   id: z.string(),
@@ -130,6 +131,7 @@ export class OllamaService {
             required: ['summary', 'riskLevel', 'overallAssessment', 'clauses']
           },
           stream: false,
+          keep_alive: OLLAMA_KEEP_ALIVE,
           options: {
             temperature: 0.1, // Keep it deterministic and factual
             num_ctx: OLLAMA_NUM_CTX // Increase context window size to allow larger prompts and responses
