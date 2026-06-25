@@ -40,3 +40,6 @@ backend/reference/reference-nda_en.txt
 !backend/reference/clausier_en.example.json
 !backend/reference/reference-nda_fr.example.txt
 !backend/reference/reference-nda_en.example.txt
+
+# Databases and data directory
+backend/data/

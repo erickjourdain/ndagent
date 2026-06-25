@@ -40,6 +40,25 @@ export interface AnalysisResponse {
   clauses: ClauseAnalysisResult[];
 }
 
+export interface PromptVersion {
+  id: number;
+  language: 'fr' | 'en';
+  version: number;
+  content: string;
+  created_at: string;
+  is_current: number;
+  description?: string;
+}
+
+export interface PaginatedPrompts {
+  prompts: PromptVersion[];
+  total: number;
+  page: number;
+  pages: number;
+  limit: number;
+  activePrompt?: PromptVersion | null;
+}
+
 export const api = {
   /**
    * Upload and analyze a client NDA file.
@@ -183,6 +202,65 @@ export const api = {
           'x-admin-password': password
         },
         params: { language }
+      }
+    );
+    return response.data;
+  },
+
+  /**
+   * Fetch all system prompt versions for admin management.
+   */
+  getAdminPrompts: async (
+    password: string,
+    language: 'fr' | 'en' = 'fr',
+    page: number = 1,
+    limit: number = 5
+  ): Promise<PaginatedPrompts> => {
+    const response = await apiClient.get<PaginatedPrompts>('/admin/prompts', {
+      headers: {
+        'x-admin-password': password
+      },
+      params: { language, page, limit }
+    });
+    return response.data;
+  },
+
+  /**
+   * Save a new prompt version.
+   */
+  updateAdminPrompt: async (
+    password: string,
+    content: string,
+    description: string,
+    language: 'fr' | 'en' = 'fr'
+  ): Promise<{ message: string; prompt: PromptVersion }> => {
+    const response = await apiClient.post<{ message: string; prompt: PromptVersion }>(
+      '/admin/prompts',
+      { content, description, language },
+      {
+        headers: {
+          'x-admin-password': password
+        }
+      }
+    );
+    return response.data;
+  },
+
+  /**
+   * Activate a specific prompt version.
+   */
+  activateAdminPrompt: async (
+    password: string,
+    id: number,
+    language: 'fr' | 'en' = 'fr'
+  ): Promise<{ message: string }> => {
+    const response = await apiClient.post<{ message: string }>(
+      '/admin/prompts/activate',
+      { id, language },
+      {
+        headers: {
+          'x-admin-password': password
+        }
       }
     );
     return response.data;

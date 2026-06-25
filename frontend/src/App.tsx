@@ -156,7 +156,7 @@ function App() {
               startIcon={<SettingsIcon />}
               onClick={() => setView('admin')}
             >
-              Gérer le clausier
+              Administration
             </Button>
           )}
           <Chip

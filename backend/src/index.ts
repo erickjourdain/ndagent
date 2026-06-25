@@ -4,6 +4,8 @@ import multer from 'multer';
 import dotenv from 'dotenv';
 import { AnalysisController } from './controllers/analysis.controller.js';
 import { ClausierController } from './controllers/clausier.controller.js';
+import { DatabaseService } from './services/database.service.js';
+import { PromptController } from './controllers/prompt.controller.js';
 
 dotenv.config();
 
@@ -40,6 +42,11 @@ app.put('/api/admin/clauses/:id', ClausierController.verifyAdmin, ClausierContro
 app.patch('/api/admin/clauses/:id/deactivate', ClausierController.verifyAdmin, ClausierController.deactivateClause);
 app.patch('/api/admin/clauses/:id/reactivate', ClausierController.verifyAdmin, ClausierController.reactivateClause);
 
+// Admin Prompts Routes
+app.get('/api/admin/prompts', ClausierController.verifyAdmin, PromptController.getPrompts);
+app.post('/api/admin/prompts', ClausierController.verifyAdmin, PromptController.updatePrompt);
+app.post('/api/admin/prompts/activate', ClausierController.verifyAdmin, PromptController.activatePrompt);
+
 // Basic Health Check Endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({
@@ -59,12 +66,22 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   res.status(500).json({ error: err.message || 'An unexpected server error occurred.' });
 });
 
-// Start listening
-app.listen(port, () => {
-  console.log(`========================================`);
-  console.log(` NDA Analyzer Server running on port ${port}`);
-  console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(` Ollama Target: ${process.env.OLLAMA_API_URL || 'http://localhost:11434'}`);
-  console.log(` Ollama Model: ${process.env.OLLAMA_MODEL || 'mistral'}`);
-  console.log(`========================================`);
-});
+// Start database then start listening
+async function startServer() {
+  try {
+    await DatabaseService.init();
+    app.listen(port, () => {
+      console.log(`========================================`);
+      console.log(` NDA Analyzer Server running on port ${port}`);
+      console.log(` Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(` Ollama Target: ${process.env.OLLAMA_API_URL || 'http://localhost:11434'}`);
+      console.log(` Ollama Model: ${process.env.OLLAMA_MODEL || 'mistral'}`);
+      console.log(`========================================`);
+    });
+  } catch (error) {
+    console.error('Fatal: Database initialization failed:', error);
+    process.exit(1);
+  }
+}
+
+startServer();

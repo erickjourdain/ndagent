@@ -18,6 +18,8 @@ services:
       - NODE_ENV=production
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    volumes:
+      - backend-db:/usr/src/app/data
     restart: always
 
   frontend:
@@ -32,3 +34,6 @@ services:
     depends_on:
       - backend
     restart: always
+
+volumes:
+  backend-db:

@@ -3,6 +3,7 @@ import { z } from 'zod';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { DatabaseService } from './database.service.js';
 
 dotenv.config();
 
@@ -51,21 +52,36 @@ export class OllamaService {
     clausierJson: any,
     language: 'fr' | 'en' = 'fr'
   ): Promise<NDAAnalysisResponse> {
-    const promptDir = getPromptDir();
-    const promptFileName = language === 'en' ? 'system_prompt_en.txt' : 'system_prompt_fr.txt';
-    const promptExampleFileName = language === 'en' ? 'system_prompt_en.txt' : 'system_prompt_fr.example.txt';
-    const promptPath = path.join(promptDir, promptFileName);
-    const promptExamplePath = path.join(promptDir, promptExampleFileName);
-
     let systemPromptTemplate = '';
+    
+    // Try to fetch active prompt from database first
     try {
-      systemPromptTemplate = await fs.readFile(promptPath, 'utf8');
-    } catch (err) {
+      const dbPrompt = await DatabaseService.getActivePrompt(language);
+      if (dbPrompt) {
+        systemPromptTemplate = dbPrompt;
+        console.log(`Using active system prompt from SQLite database for language "${language}"`);
+      }
+    } catch (dbErr) {
+      console.warn('Failed to fetch prompt from database, falling back to file system:', dbErr);
+    }
+
+    // Fallback to filesystem if database prompt was not found or failed
+    if (!systemPromptTemplate) {
+      const promptDir = getPromptDir();
+      const promptFileName = language === 'en' ? 'system_prompt_en.txt' : 'system_prompt_fr.txt';
+      const promptExampleFileName = language === 'en' ? 'system_prompt_en.txt' : 'system_prompt_fr.example.txt';
+      const promptPath = path.join(promptDir, promptFileName);
+      const promptExamplePath = path.join(promptDir, promptExampleFileName);
+
       try {
-        systemPromptTemplate = await fs.readFile(promptExamplePath, 'utf8');
-        console.log(`Using ${promptExampleFileName} fallback`);
-      } catch (exErr) {
-        console.warn(`Could not read ${promptFileName} or ${promptExampleFileName}, using empty default:`, exErr);
+        systemPromptTemplate = await fs.readFile(promptPath, 'utf8');
+      } catch (err) {
+        try {
+          systemPromptTemplate = await fs.readFile(promptExamplePath, 'utf8');
+          console.log(`Using ${promptExampleFileName} fallback`);
+        } catch (exErr) {
+          console.warn(`Could not read ${promptFileName} or ${promptExampleFileName}, using empty default:`, exErr);
+        }
       }
     }
 

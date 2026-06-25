@@ -21,9 +21,10 @@ RUN npm ci --omit=dev
 # Copy compiled code from builder
 COPY --from=builder /usr/src/app/dist ./dist
 
-# Copy reference documents and prompt templates needed at runtime
+# Copy reference documents, prompt templates, and seed database needed at runtime
 COPY reference ./reference
 COPY prompt ./prompt
+COPY seed ./seed
 
 EXPOSE 3000
 

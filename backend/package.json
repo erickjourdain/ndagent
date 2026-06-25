@@ -16,6 +16,7 @@
     "mammoth": "^1.8.0",
     "multer": "^1.4.5-lts.1",
     "pdf-parse": "^1.1.1",
+    "sqlite3": "^6.0.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -23,6 +24,7 @@
     "@types/express": "^4.17.21",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.14.9",
+    "@types/sqlite3": "^3.1.11",
     "tsx": "^4.15.7",
     "typescript": "^5.5.2"
   }
