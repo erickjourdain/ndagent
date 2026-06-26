@@ -18,8 +18,6 @@ const getPromptDir = () => {
 
 const OLLAMA_API_URL = process.env.OLLAMA_API_URL || 'http://localhost:11434';
 const OLLAMA_MODEL = process.env.OLLAMA_MODEL || 'mistral';
-const OLLAMA_NUM_CTX = parseInt(process.env.OLLAMA_NUM_CTX || '12288', 10);
-const OLLAMA_MAX_CTX = parseInt(process.env.OLLAMA_MAX_CTX || '32768', 10);
 const OLLAMA_KEEP_ALIVE = process.env.OLLAMA_KEEP_ALIVE || '1h';
 
 export const ClauseAnalysisResultSchema = z.object({
@@ -112,12 +110,16 @@ export class OllamaService {
     const estimatedInputTokens = Math.ceil(totalPromptChars / 3);
     const expectedOutputTokens = 4000; // Reserved space for the JSON output report
     const calculatedCtx = estimatedInputTokens + expectedOutputTokens;
+
+    const numCtxFloor = parseInt(process.env.OLLAMA_NUM_CTX || '12288', 10);
+    const numCtxCeiling = parseInt(process.env.OLLAMA_MAX_CTX || '32768', 10);
+
     const finalNumCtx = Math.min(
-      Math.max(calculatedCtx, OLLAMA_NUM_CTX),
-      OLLAMA_MAX_CTX
+      Math.max(calculatedCtx, numCtxFloor),
+      numCtxCeiling
     );
 
-    console.log(`Calcul du contexte dynamique : ${totalPromptChars} caractères -> ~${estimatedInputTokens} tokens d'entrée. num_ctx défini à ${finalNumCtx} (min: ${OLLAMA_NUM_CTX}, max: ${OLLAMA_MAX_CTX})`);
+    console.log(`Calcul du contexte dynamique : ${totalPromptChars} caractères -> ~${estimatedInputTokens} tokens d'entrée. num_ctx défini à ${finalNumCtx} (min: ${numCtxFloor}, max: ${numCtxCeiling})`);
 
     try {
       console.log('Lancement de l\'analyse du NDA...');

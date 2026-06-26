@@ -22,6 +22,9 @@ export class DatabaseService {
   private static getDataDir(): string {
     // Compiled file is in dist/services/database.service.js
     // Root is at ../.. relative to dist/services/
+    if (process.env.NODE_ENV === 'test') {
+      return path.join(__dirname, '..', '..', 'data-test');
+    }
     return path.join(__dirname, '..', '..', 'data');
   }
 
@@ -299,5 +302,25 @@ export class DatabaseService {
       'UPDATE prompts SET is_current = 1 WHERE id = ? AND language = ?',
       [id, language]
     );
+  }
+
+  /**
+   * Close the database connection.
+   */
+  static close(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.db) {
+        this.db.close((err) => {
+          if (err) {
+            reject(err);
+          } else {
+            this.db = null;
+            resolve();
+          }
+        });
+      } else {
+        resolve();
+      }
+    });
   }
 }
