@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
 async function run() {
   const seedDir = path.join(__dirname, '..', '..', 'seed');
   const promptDir = path.join(__dirname, '..', '..', 'prompt');
+  const referenceDir = path.join(__dirname, '..', '..', 'reference');
   
   // Ensure seed directory exists
   await fs.mkdir(seedDir, { recursive: true });
@@ -57,12 +58,25 @@ async function run() {
         description TEXT
       );
       CREATE INDEX IF NOT EXISTS idx_prompts_lang_current ON prompts (language, is_current);
+
+      CREATE TABLE IF NOT EXISTS clauses (
+        id TEXT NOT NULL,
+        name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        criticality TEXT NOT NULL,
+        active INTEGER NOT NULL DEFAULT 1,
+        language TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id, language)
+      );
+      CREATE INDEX IF NOT EXISTS idx_clauses_lang_active ON clauses (language, active);
     `);
 
     console.log('Schema created successfully in seed database.');
 
     const languages: ('fr' | 'en')[] = ['fr', 'en'];
 
+    // 1. Seed Prompts
     for (const lang of languages) {
       const promptFileName = lang === 'en' ? 'system_prompt_en.txt' : 'system_prompt_fr.txt';
       const promptPath = path.join(promptDir, promptFileName);
@@ -80,6 +94,38 @@ async function run() {
         [lang, 1, content, 1, 'Initialisation du prompt par défaut']
       );
       console.log(`Seeded prompt for language "${lang}" into seed database.`);
+    }
+
+    // 2. Seed Clauses
+    for (const lang of languages) {
+      const clausesFileName = `clausier_${lang}.json`;
+      const clausesExampleFileName = `clausier_${lang}.example.json`;
+      const clausesPath = path.join(referenceDir, clausesFileName);
+      const clausesExamplePath = path.join(referenceDir, clausesExampleFileName);
+
+      let raw = '';
+      try {
+        raw = await fs.readFile(clausesPath, 'utf8');
+      } catch (err) {
+        try {
+          raw = await fs.readFile(clausesExamplePath, 'utf8');
+          console.log(`[Seed] Using ${clausesExampleFileName} fallback for clauses language "${lang}"`);
+        } catch (exErr) {
+          console.error(`Failed to read clauses or example file for "${lang}":`, exErr);
+          throw exErr;
+        }
+      }
+
+      const parsed = JSON.parse(raw);
+      const clauses = parsed.clauses || [];
+
+      for (const c of clauses) {
+        await runQuery(
+          `INSERT OR REPLACE INTO clauses (id, name, description, criticality, active, language) VALUES (?, ?, ?, ?, ?, ?)`,
+          [c.id, c.name, c.description, c.criticality, c.active !== false ? 1 : 0, lang]
+        );
+      }
+      console.log(`Seeded ${clauses.length} example clauses for language "${lang}" into seed database.`);
     }
 
     db.close((err) => {

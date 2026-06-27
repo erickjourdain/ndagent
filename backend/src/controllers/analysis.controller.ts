@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { FileParserService } from '../services/file-parser.service.js';
 import { OllamaService } from '../services/ollama.service.js';
+import { DatabaseService } from '../services/database.service.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,11 +34,8 @@ export class AnalysisController {
       const referenceDir = getReferenceDir();
       const referenceNdaPath = path.join(referenceDir, language === 'en' ? 'reference-nda_en.txt' : 'reference-nda_fr.txt');
       const referenceNdaExamplePath = path.join(referenceDir, language === 'en' ? 'reference-nda_en.txt' : 'reference-nda_fr.example.txt');
-      const clausierPath = path.join(referenceDir, language === 'en' ? 'clausier_en.json' : 'clausier_fr.json');
-      const clausierExamplePath = path.join(referenceDir, language === 'en' ? 'clausier_en.json' : 'clausier_fr.example.json');
 
       let referenceNdaText = '';
-      let clausierJson = { clauses: [] };
 
       try {
         referenceNdaText = await fs.readFile(referenceNdaPath, 'utf8');
@@ -50,22 +48,9 @@ export class AnalysisController {
         }
       }
 
-      try {
-        const clausierRaw = await fs.readFile(clausierPath, 'utf8');
-        clausierJson = JSON.parse(clausierRaw);
-      } catch (err) {
-        try {
-          const clausierRaw = await fs.readFile(clausierExamplePath, 'utf8');
-          clausierJson = JSON.parse(clausierRaw);
-          console.log(`Using ${path.basename(clausierExamplePath)} fallback`);
-        } catch (exErr) {
-          console.warn(`Could not read ${path.basename(clausierPath)} or ${path.basename(clausierExamplePath)}, using empty default:`, exErr);
-        }
-      }
-
-      // Filter out inactive clauses to ensure the LLM only receives active ones
-      const activeClausesForAnalysis = (clausierJson.clauses || []).filter((c: any) => c.active !== false);
-      clausierJson = { clauses: activeClausesForAnalysis };
+      // Retrieve only active clauses from DatabaseService
+      const activeClausesForAnalysis = await DatabaseService.getClauses(language, true);
+      const clausierJson = { clauses: activeClausesForAnalysis };
 
       // 2. Parse client document
       console.log(`Parsing file ${file.originalname} (${file.mimetype})...`);
@@ -101,8 +86,6 @@ export class AnalysisController {
       const referenceDir = getReferenceDir();
       const referenceNdaPath = path.join(referenceDir, language === 'en' ? 'reference-nda_en.txt' : 'reference-nda_fr.txt');
       const referenceNdaExamplePath = path.join(referenceDir, language === 'en' ? 'reference-nda_en.txt' : 'reference-nda_fr.example.txt');
-      const clausierPath = path.join(referenceDir, language === 'en' ? 'clausier_en.json' : 'clausier_fr.json');
-      const clausierExamplePath = path.join(referenceDir, language === 'en' ? 'clausier_en.json' : 'clausier_fr.example.json');
 
       let referenceNda = '';
       try {
@@ -111,17 +94,8 @@ export class AnalysisController {
         referenceNda = await fs.readFile(referenceNdaExamplePath, 'utf-8');
       }
 
-      let clausier;
-      try {
-        const clausierRaw = await fs.readFile(clausierPath, 'utf-8');
-        clausier = JSON.parse(clausierRaw);
-      } catch (err) {
-        const clausierRaw = await fs.readFile(clausierExamplePath, 'utf-8');
-        clausier = JSON.parse(clausierRaw);
-      }
-
-      // Filter to only return active clauses to regular users
-      const activeClausesForViewer = (clausier.clauses || []).filter((c: any) => c.active !== false);
+      // Retrieve only active clauses from DatabaseService
+      const activeClausesForViewer = await DatabaseService.getClauses(language, true);
 
       res.status(200).json({
         referenceNda,

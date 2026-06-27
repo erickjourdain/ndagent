@@ -16,6 +16,24 @@ export interface DbPrompt {
   description?: string;
 }
 
+export interface Clause {
+  id: string;
+  name: string;
+  description: string;
+  criticality: 'High' | 'Medium' | 'Low';
+  active?: boolean;
+}
+
+export interface DbClause {
+  id: string;
+  name: string;
+  description: string;
+  criticality: 'High' | 'Medium' | 'Low';
+  active: number;
+  language: 'fr' | 'en';
+  created_at: string;
+}
+
 export class DatabaseService {
   private static db: sqlite3.Database | null = null;
 
@@ -30,6 +48,10 @@ export class DatabaseService {
 
   private static getPromptDir(): string {
     return path.join(__dirname, '..', '..', 'prompt');
+  }
+
+  private static getReferenceDir(): string {
+    return path.join(__dirname, '..', '..', 'reference');
   }
 
   /**
@@ -79,6 +101,7 @@ export class DatabaseService {
         try {
           await this.createSchema();
           await this.seedInitialPrompts();
+          await this.seedInitialClauses();
           resolve();
         } catch (schemaErr) {
           reject(schemaErr);
@@ -137,7 +160,7 @@ export class DatabaseService {
    */
   private static async createSchema(): Promise<void> {
     const createTableSql = `
-      CREATE TABLE IF NOT EXISTS prompts (
+       CREATE TABLE IF NOT EXISTS prompts (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         language TEXT NOT NULL,
         version INTEGER NOT NULL,
@@ -147,6 +170,18 @@ export class DatabaseService {
         description TEXT
       );
       CREATE INDEX IF NOT EXISTS idx_prompts_lang_current ON prompts (language, is_current);
+
+      CREATE TABLE IF NOT EXISTS clauses (
+        id TEXT NOT NULL,
+        name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        criticality TEXT NOT NULL,
+        active INTEGER NOT NULL DEFAULT 1,
+        language TEXT NOT NULL,
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (id, language)
+      );
+      CREATE INDEX IF NOT EXISTS idx_clauses_lang_active ON clauses (language, active);
     `;
 
     return new Promise<void>((resolve, reject) => {
@@ -301,6 +336,121 @@ export class DatabaseService {
     await this.run(
       'UPDATE prompts SET is_current = 1 WHERE id = ? AND language = ?',
       [id, language]
+    );
+  }
+
+  /**
+   * Seed the database with the initial clauses from json files in /reference if empty.
+   */
+  private static async seedInitialClauses(): Promise<void> {
+    const checkCount = await this.get<{ count: number }>('SELECT count(*) as count FROM clauses');
+    if (checkCount && checkCount.count > 0) {
+      console.log('Database already has clauses. Skipping seed.');
+      return;
+    }
+
+    console.log('Clauses table is empty. Seeding defaults from disk...');
+    const languages: ('fr' | 'en')[] = ['fr', 'en'];
+
+    for (const lang of languages) {
+      const referenceDir = this.getReferenceDir();
+      const fileName = lang === 'en' ? 'clausier_en.json' : 'clausier_fr.json';
+      const exampleFileName = lang === 'en' ? 'clausier_en.json' : 'clausier_fr.example.json';
+      const pathFile = path.join(referenceDir, fileName);
+      const examplePathFile = path.join(referenceDir, exampleFileName);
+
+      let raw = '';
+      try {
+        raw = await fs.readFile(pathFile, 'utf8');
+      } catch (err) {
+        try {
+          raw = await fs.readFile(examplePathFile, 'utf8');
+          console.log(`[Seed] Using ${exampleFileName} fallback for clauses language "${lang}"`);
+        } catch (exErr) {
+          console.warn(`[Seed] Could not read default clauses file for "${lang}". Creating empty default.`);
+          raw = JSON.stringify({ clauses: [] });
+        }
+      }
+
+      try {
+        const parsed = JSON.parse(raw);
+        const clauses: Clause[] = parsed.clauses || [];
+        for (const c of clauses) {
+          await this.run(
+            `INSERT OR REPLACE INTO clauses (id, name, description, criticality, active, language) VALUES (?, ?, ?, ?, ?, ?)`,
+            [c.id, c.name, c.description, c.criticality, c.active !== false ? 1 : 0, lang]
+          );
+        }
+        console.log(`[Seed] Successfully seeded ${clauses.length} clauses for language "${lang}"`);
+      } catch (jsonErr: any) {
+        console.error(`[Seed] Failed to parse clauses JSON for "${lang}":`, jsonErr.message);
+      }
+    }
+  }
+
+  /**
+   * Get all clauses for a language.
+   * If onlyActive is true, returns only active clauses.
+   */
+  static async getClauses(language: 'fr' | 'en', onlyActive: boolean = false): Promise<Clause[]> {
+    let sql = 'SELECT id, name, description, criticality, active FROM clauses WHERE language = ?';
+    const params: any[] = [language];
+    
+    if (onlyActive) {
+      sql += ' AND active = 1';
+    }
+
+    const rows = await this.all<any>(sql, params);
+    return rows.map(row => ({
+      id: row.id,
+      name: row.name,
+      description: row.description,
+      criticality: row.criticality as 'High' | 'Medium' | 'Low',
+      active: row.active === 1
+    }));
+  }
+
+  /**
+   * Get a single clause by ID and language.
+   */
+  static async getClauseById(id: string, language: 'fr' | 'en'): Promise<Clause | null> {
+    const row = await this.get<any>(
+      'SELECT id, name, description, criticality, active FROM clauses WHERE id = ? AND language = ?',
+      [id, language]
+    );
+    if (!row) return null;
+    return {
+      id: row.id,
+      name: row.name,
+      description: row.description,
+      criticality: row.criticality as 'High' | 'Medium' | 'Low',
+      active: row.active === 1
+    };
+  }
+
+  /**
+   * Add a new clause.
+   */
+  static async addClause(clause: Clause, language: 'fr' | 'en'): Promise<Clause> {
+    const activeVal = clause.active !== false ? 1 : 0;
+    await this.run(
+      'INSERT INTO clauses (id, name, description, criticality, active, language) VALUES (?, ?, ?, ?, ?, ?)',
+      [clause.id, clause.name, clause.description, clause.criticality, activeVal, language]
+    );
+    return {
+      ...clause,
+      active: clause.active !== false
+    };
+  }
+
+  /**
+   * Update the active status of a clause.
+   */
+  static async updateClauseStatus(id: string, language: 'fr' | 'en', active: boolean): Promise<void> {
+    const activeVal = active ? 1 : 0;
+    await this.run(
+      'UPDATE clauses SET active = ? WHERE id = ? AND language = ?',
+      [activeVal, id, language]
     );
   }
 

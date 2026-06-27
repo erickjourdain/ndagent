@@ -1,58 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import fs from 'fs/promises';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { DatabaseService, Clause } from '../services/database.service.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Helper to get absolute path to backend reference folder
-const getReferenceDir = () => {
-  return path.join(__dirname, '..', '..', 'reference');
-};
-
-export interface Clause {
-  id: string;
-  name: string;
-  description: string;
-  criticality: 'High' | 'Medium' | 'Low';
-  active?: boolean;
-}
-
-const getClausierPath = (language: string = 'fr') => {
-  return path.join(getReferenceDir(), language === 'en' ? 'clausier_en.json' : 'clausier_fr.json');
-};
-
-const getClausierExamplePath = (language: string = 'fr') => {
-  return path.join(getReferenceDir(), language === 'en' ? 'clausier_en.json' : 'clausier_fr.example.json');
-};
-
-async function readClausierFile(language: string = 'fr'): Promise<Clause[]> {
-  const p = getClausierPath(language);
-  const ep = getClausierExamplePath(language);
-  let raw = '';
-  try {
-    raw = await fs.readFile(p, 'utf-8');
-  } catch (err) {
-    try {
-      raw = await fs.readFile(ep, 'utf-8');
-    } catch (exErr) {
-      return [];
-    }
-  }
-  try {
-    const parsed = JSON.parse(raw);
-    return parsed.clauses || [];
-  } catch {
-    return [];
-  }
-}
-
-async function writeClausierFile(clauses: Clause[], language: string = 'fr'): Promise<void> {
-  const p = getClausierPath(language);
-  const data = { clauses };
-  await fs.writeFile(p, JSON.stringify(data, null, 2), 'utf-8');
-}
+export { Clause }; // Re-export Clause to ensure compatibility if other files import it from here
 
 export class ClausierController {
   /**
@@ -87,13 +36,8 @@ export class ClausierController {
   static async getClauses(req: Request, res: Response): Promise<void> {
     try {
       const language = req.query.language === 'en' ? 'en' : 'fr';
-      const clauses = await readClausierFile(language);
-      // Explicitly set active default to true for backward compatibility
-      const formattedClauses = clauses.map(c => ({
-        ...c,
-        active: c.active !== false
-      }));
-      res.status(200).json(formattedClauses);
+      const clauses = await DatabaseService.getClauses(language, false);
+      res.status(200).json(clauses);
     } catch (error: any) {
       console.error('Failed to get clauses:', error);
       res.status(500).json({ error: 'Échec de la récupération des clauses.' });
@@ -112,8 +56,8 @@ export class ClausierController {
         return;
       }
 
-      const clauses = await readClausierFile(language);
-      if (clauses.some(c => c.id.toLowerCase() === id.toLowerCase())) {
+      const existingClause = await DatabaseService.getClauseById(id, language);
+      if (existingClause) {
         res.status(400).json({ error: `Une clause avec l'identifiant "${id}" existe déjà.` });
         return;
       }
@@ -126,8 +70,7 @@ export class ClausierController {
         active: true
       };
 
-      clauses.push(newClause);
-      await writeClausierFile(clauses, language);
+      await DatabaseService.addClause(newClause, language);
       res.status(201).json(newClause);
     } catch (error: any) {
       console.error('Failed to create clause:', error);
@@ -149,18 +92,19 @@ export class ClausierController {
         return;
       }
 
-      const clauses = await readClausierFile(language);
-      const index = clauses.findIndex(c => c.id === id);
-      if (index === -1) {
+      const existingClause = await DatabaseService.getClauseById(id, language);
+      if (!existingClause) {
         res.status(404).json({ error: `La clause avec l'identifiant "${id}" n'existe pas.` });
         return;
       }
 
       // 1. Inactivate the original clause
-      clauses[index].active = false;
+      await DatabaseService.updateClauseStatus(id, language, false);
+      const updatedOldClause = { ...existingClause, active: false };
 
       // 2. Generate next versioned ID for the new active clause
-      const existingIds = clauses.map(c => c.id);
+      const allClauses = await DatabaseService.getClauses(language, false);
+      const existingIds = allClauses.map(c => c.id);
       let baseId = id;
       let version = 1;
 
@@ -185,12 +129,11 @@ export class ClausierController {
         active: true
       };
 
-      clauses.push(newClause);
-      await writeClausierFile(clauses, language);
+      await DatabaseService.addClause(newClause, language);
 
       res.status(200).json({
         message: 'Clause modifiée avec succès. L\'ancienne version a été désactivée.',
-        oldClause: clauses[index],
+        oldClause: updatedOldClause,
         newClause
       });
     } catch (error: any) {
@@ -207,17 +150,16 @@ export class ClausierController {
       const language = req.query.language === 'en' ? 'en' : 'fr';
       const { id } = req.params;
 
-      const clauses = await readClausierFile(language);
-      const index = clauses.findIndex(c => c.id === id);
-      if (index === -1) {
+      const existingClause = await DatabaseService.getClauseById(id, language);
+      if (!existingClause) {
         res.status(404).json({ error: `La clause avec l'identifiant "${id}" n'existe pas.` });
         return;
       }
 
-      clauses[index].active = false;
-      await writeClausierFile(clauses, language);
+      await DatabaseService.updateClauseStatus(id, language, false);
+      const updatedClause = { ...existingClause, active: false };
 
-      res.status(200).json(clauses[index]);
+      res.status(200).json(updatedClause);
     } catch (error: any) {
       console.error('Failed to deactivate clause:', error);
       res.status(500).json({ error: 'Échec de la désactivation de la clause.' });
@@ -232,17 +174,16 @@ export class ClausierController {
       const language = req.query.language === 'en' ? 'en' : 'fr';
       const { id } = req.params;
 
-      const clauses = await readClausierFile(language);
-      const index = clauses.findIndex(c => c.id === id);
-      if (index === -1) {
+      const existingClause = await DatabaseService.getClauseById(id, language);
+      if (!existingClause) {
         res.status(404).json({ error: `La clause avec l'identifiant "${id}" n'existe pas.` });
         return;
       }
 
-      clauses[index].active = true;
-      await writeClausierFile(clauses, language);
+      await DatabaseService.updateClauseStatus(id, language, true);
+      const updatedClause = { ...existingClause, active: true };
 
-      res.status(200).json(clauses[index]);
+      res.status(200).json(updatedClause);
     } catch (error: any) {
       console.error('Failed to reactivate clause:', error);
       res.status(500).json({ error: 'Échec de la réactivation de la clause.' });
